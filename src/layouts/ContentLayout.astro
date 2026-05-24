@@ -1,0 +1,245 @@
+---
+import { BackToTop } from 'astro-pure/components/pages'
+import type { SiteMeta } from 'astro-pure/types'
+import { Button, Icon } from 'astro-pure/user'
+import { cn } from 'astro-pure/utils'
+import PageLayout from '@/layouts/BaseLayout.astro'
+import { integ } from '@/site-config'
+
+interface Props {
+  meta: SiteMeta
+  highlightColor?: string
+  back?: string
+  hideBack?: boolean
+  mainClass?: string
+  sidebarClass?: string
+}
+
+const {
+  meta,
+  highlightColor,
+  back = '/',
+  hideBack = false,
+  mainClass,
+  sidebarClass,
+  ...props
+} = Astro.props
+---
+
+<PageLayout {meta} {highlightColor} {...props}>
+  <div class='reading-progress' aria-hidden='true'>
+    <div id='reading-progress-bar' class='reading-progress-bar'></div>
+  </div>
+  {
+    !hideBack && (
+      <Button
+        title='Back'
+        href='#'
+        onclick='history.back(); return false;'
+        data-astro-prefetch='false'
+        variant='back'
+      />
+    )
+  }
+  <main class={cn('mt-6 items-start gap-x-10 md:flex', mainClass)}>
+    {/* Sidebar */}
+    <aside
+      class={cn(
+        'animate top-20 min-w-48 basis-60 overflow-y-scroll max-md:hidden z-40 fixed md:sticky md:order-2 lg:shrink-0 max-md:border max-md:px-4 max-md:py-3 max-md:bg-muted max-md:rounded-xl',
+        sidebarClass
+      )}
+      style='height:calc(100vh - 7rem); display: flex; flex-direction: column;'
+      id='sidebar'
+    >
+      <slot name='sidebar' />
+    </aside>
+    <div
+      id='sidebar-shade'
+      class='fixed top-0 start-0 w-full h-full'
+      style='display:none;background-color:#00000091;z-index:31'
+    >
+    </div>
+
+    <article class='min-w-0 grow'>
+      {/* Content header */}
+      <div id='content-header' class='animate'>
+        <slot name='header' />
+      </div>
+
+      {/* Content */}
+      <div
+        id='content'
+        class={cn(
+          'max-w-none animate mt-8 md:min-w-[45ch] overflow-x-hidden',
+          integ.typography.class
+        )}
+      >
+        <slot />
+      </div>
+    </article>
+  </main>
+
+  <div class='bottom mt-6 items-start gap-x-10 md:flex'>
+    {/* Bottom */}
+    <div class='flex-1 text-muted-foreground md:min-w-[50ch]'>
+      <slot name='bottom' />
+    </div>
+    <div class='min-w-48 basis-60'>
+      <slot name='bottom-sidebar' />
+    </div>
+  </div>
+
+  <BackToTop header='content-header' content='content'>
+    <button
+      slot='other-icons'
+      aria-label='Toggle sidebar'
+      class='size-10 flex items-center justify-center rounded-full border-2 border-transparent bg-muted text-muted-foreground duration-300 hover:border-border/75 md:hidden sm:size-12'
+      id='sidebar-btn'
+    >
+      <Icon name='list' />
+    </button>
+  </BackToTop>
+</PageLayout>
+
+<script>
+  // Toggle sidebar visibility on button click
+  const sidebarButton = document.getElementById('sidebar-btn')
+  const sidebar = document.getElementById('sidebar')
+  const sidebarShade = document.getElementById('sidebar-shade') as HTMLElement
+
+  if (sidebarShade) {
+    sidebarShade.addEventListener('click', () => {
+      toggleSidebar()
+    })
+  }
+
+  function toggleSidebar() {
+    if (sidebar && sidebar.classList.contains('show')) {
+      sidebar.classList.remove('show')
+      sidebarShade.style.display = 'none'
+    } else if (sidebar) {
+      sidebar.classList.add('show')
+      sidebarShade.style.display = 'block'
+    }
+  }
+
+  sidebarButton?.addEventListener('click', () => {
+    toggleSidebar()
+  })
+
+  const progressBar = document.getElementById('reading-progress-bar')
+  const contentEl = document.getElementById('content')
+  let progressTicking = false
+
+  function updateReadingProgress() {
+    if (!progressBar || !contentEl) return
+    const scrollTop = Math.max(0, window.scrollY || document.documentElement.scrollTop)
+    const contentTop = contentEl.offsetTop
+    const contentHeight = contentEl.scrollHeight
+    const viewportHeight = window.innerHeight
+    const maxScrollable = Math.max(0, contentHeight + contentTop - viewportHeight)
+    const progress = maxScrollable === 0 ? 0 : Math.min(1, Math.max(0, scrollTop / maxScrollable))
+    progressBar.style.transform = `scaleX(${progress})`
+    progressTicking = false
+  }
+
+  document.addEventListener('scroll', () => {
+    if (progressTicking) return
+    progressTicking = true
+    requestAnimationFrame(updateReadingProgress)
+  })
+
+  window.addEventListener('resize', updateReadingProgress)
+  updateReadingProgress()
+</script>
+<style>
+  .reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: transparent;
+    z-index: 50;
+  }
+
+  .reading-progress-bar {
+    height: 100%;
+    width: 100%;
+    transform-origin: left;
+    transform: scaleX(0);
+    background: linear-gradient(90deg, #6d28d9 0%, #7c3aed 35%, #a855f7 70%, #c084fc 100%);
+    box-shadow:
+      0 0 10px rgba(167, 139, 250, 0.75),
+      0 0 18px rgba(217, 70, 239, 0.55),
+      0 0 28px rgba(59, 130, 246, 0.45);
+    transition: transform 60ms ease-out;
+  }
+
+  @media (min-width: 769px) {
+    #sidebar-shade {
+      display: none !important;
+    }
+  }
+  @media (max-width: 769px) {
+    aside.show {
+      display: block !important;
+      opacity: 1;
+      pointer-events: auto;
+      animation: 300ms fade-in-side !important;
+      animation-fill-mode: forwards;
+    }
+
+    @keyframes fade-in-side {
+      0% {
+        transform: translateX(50%);
+        opacity: 0;
+      }
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    @keyframes fade-in {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    aside {
+      display: none !important;
+      pointer-events: none;
+      .animate {
+        animation: none !important;
+      } /* Ensure nested or same-element animation is killed */
+      animation: none !important; /* Override global .animate */
+      right: 0;
+      top: 0 !important;
+      height: 100vh !important;
+      min-width: 40vw !important;
+      max-width: 75vw !important;
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+      padding-top: 1.5rem !important;
+      padding-bottom: 1.5rem !important;
+    }
+    :global(#action-buttons) {
+      right: 1rem !important;
+      left: auto !important;
+      transform: translateY(0) !important;
+    }
+    :global(#action-buttons button) {
+      pointer-events: auto !important;
+    }
+    #sidebar-shade {
+      animation: 300ms fade-in;
+    }
+  }
+  @media (max-width: 640px) {
+    aside {
+      min-width: 55vw !important;
+    }
+  }
+</style>

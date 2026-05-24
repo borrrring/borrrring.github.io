@@ -1,0 +1,40 @@
+---
+import { type CollectionEntry, render } from 'astro:content'
+
+import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
+import PostLayout from '@/layouts/BlogPost.astro'
+import { buildBacklinksMap, getBacklinksForPost, getOutgoingLinks, type Backlink } from '@/utils/backlinks'
+
+export const prerender = true
+
+export async function getStaticPaths() {
+  const posts = sortMDByDate(await getBlogCollection())
+  // Build backlinks map for all posts
+  const backlinksMap = await buildBacklinksMap(posts, '/blog')
+  
+  return posts.map((post) => {
+    // Pre-compute backlinks and outgoing links for each post
+    const backlinks = getBacklinksForPost(backlinksMap, post.id)
+    const outgoingLinks = getOutgoingLinks(post, posts, '/blog')
+    
+    return {
+      params: { id: post.id },
+      props: { post, posts, backlinks, outgoingLinks }
+    }
+  })
+}
+
+type Props = {
+  post: CollectionEntry<'blog'>
+  posts: CollectionEntry<'blog'>[]
+  backlinks: Backlink[]
+  outgoingLinks: Backlink[]
+}
+
+const { post, posts, backlinks, outgoingLinks } = Astro.props
+const { Content, headings, remarkPluginFrontmatter } = await render(post)
+---
+
+<PostLayout {post} {posts} {headings} {remarkPluginFrontmatter} {backlinks} {outgoingLinks}>
+  <Content />
+</PostLayout>

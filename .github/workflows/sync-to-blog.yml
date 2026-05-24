@@ -1,0 +1,34 @@
+name: Sync to Blog Repository
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false # 禁用默认凭据，防止干扰
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "IceLing"
+          git config --global user.email "lemonadorable@gmail.com"
+
+      - name: Force Push
+        env:
+          MY_TOKEN: ${{ secrets.DEPLOYTOLEMON }}
+        run: |
+          if [ -z "$MY_TOKEN" ]; then
+            echo "错误：Secret DEPLOYTOLEMON 为空！"
+            exit 1
+          fi
+
+          # 使用自定义 Token 推送
+          git push "https://x-access-token:${MY_TOKEN}@github.com/LemonAdorable/lemonadorable.github.io.git" main:master --force

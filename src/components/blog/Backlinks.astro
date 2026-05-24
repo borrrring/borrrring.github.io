@@ -1,0 +1,191 @@
+---
+/**
+ * Backlinks component - displays posts that link to the current post
+ * 反向链接组件 - 显示链接到当前文章的其他文章
+ */
+import type { Backlink } from '@/utils/backlinks'
+import { cn } from 'astro-pure/utils'
+
+interface Props {
+  backlinks: Backlink[]
+  currentPostId: string
+  class?: string
+  title?: string
+}
+
+const { backlinks, currentPostId, class: className, title = '反向链接' } = Astro.props
+
+// Format date helper
+function formatDate(date?: Date): string {
+  if (!date) return ''
+  return date.toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  })
+}
+---
+
+{
+  backlinks.length > 0 && (
+    <section class={cn('rounded-xl border px-3 sm:px-4 py-2 sm:py-3', className)}>
+      <div class="links-header">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="text-muted-foreground"
+        >
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+        </svg>
+        <h3 class="links-title">{title}</h3>
+        <span class="links-count">({backlinks.length})</span>
+      </div>
+
+      <ul class="links-list">
+        {backlinks.map((backlink) => (
+          <li class="links-item">
+            <div class="links-row">
+              <a href={backlink.url} class="links-link group">
+                <span class="links-link-title">{backlink.title}</span>
+                {backlink.date && (
+                  <span class="links-date">{formatDate(backlink.date)}</span>
+                )}
+              </a>
+              <a
+                href={`${backlink.url}?locate=${currentPostId}`}
+                class="locate-btn"
+                title="跳转并定位到引用处"
+                aria-label="跳转并定位到引用处"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </a>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  .links-header {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .links-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+    margin: 0;
+  }
+
+  .links-count {
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .links-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .links-item {
+    padding: 0;
+  }
+
+  .links-row {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-inline: -0.5rem;
+    padding-inline-start: 0.5rem;
+    padding-inline-end: 0.25rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.15s ease;
+  }
+
+  .links-row:hover {
+    background-color: hsl(var(--muted));
+  }
+
+  .links-link {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.375rem 0.5rem;
+    text-decoration: none;
+    color: hsl(var(--foreground));
+    min-width: 0;
+  }
+
+  .links-link-title {
+    font-size: 0.875rem;
+    transition: color 0.15s ease;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .links-row:hover .links-link-title {
+    color: hsl(var(--primary));
+  }
+
+  .links-date {
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
+    flex-shrink: 0;
+  }
+
+  .locate-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: none;
+    border-radius: 0.375rem;
+    background: transparent;
+    color: hsl(var(--muted-foreground));
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+    text-decoration: none;
+  }
+
+  .locate-btn:hover {
+    background-color: hsl(var(--primary) / 0.1);
+    color: hsl(var(--primary));
+  }
+</style>

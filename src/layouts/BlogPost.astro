@@ -1,0 +1,439 @@
+---
+import type { MarkdownHeading } from 'astro'
+import type { CollectionEntry } from 'astro:content'
+
+// Plugin styles
+import 'katex/dist/katex.min.css'
+
+import config from 'virtual:config'
+
+import { MediumZoom } from 'astro-pure/advanced'
+import { ArticleBottom, Copyright, GraphView, Hero, TOC } from 'astro-pure/components/pages'
+import PageLayout from '@/layouts/ContentLayout.astro'
+import Backlinks from '@/components/blog/Backlinks.astro'
+import OutgoingLinks from '@/components/blog/OutgoingLinks.astro'
+import { Giscus } from '@/components/giscus'
+import { PageInfo } from '@/components/waline'
+import type { Backlink } from '@/utils/backlinks'
+
+interface Props {
+  post: CollectionEntry<'blog'>
+  posts: CollectionEntry<'blog'>[]
+  headings: MarkdownHeading[]
+  remarkPluginFrontmatter: Record<string, unknown>
+  backlinks?: Backlink[]
+  outgoingLinks?: Backlink[]
+}
+
+const {
+  post: { id, data },
+  posts,
+  headings,
+  remarkPluginFrontmatter,
+  backlinks = [],
+  outgoingLinks = []
+} = Astro.props
+
+const {
+  description,
+  heroImage,
+  publishDate,
+  title,
+  updatedDate,
+  draft: isDraft,
+  comment: enableComment
+} = data
+
+const socialImage = heroImage
+  ? typeof heroImage.src === 'string'
+    ? heroImage.src
+    : heroImage.src.src
+  : config.socialCard
+const articleDate = updatedDate?.toISOString() ?? publishDate.toISOString()
+const primaryColor = data.heroImage?.color ?? '#B19CD9'
+---
+
+<PageLayout
+  meta={{ articleDate, description, ogImage: socialImage, title }}
+  highlightColor={primaryColor}
+  back='/blog'
+>
+  {!!headings.length && <TOC {headings} slot='sidebar' />}
+
+  <Hero {data} {remarkPluginFrontmatter} slot='header'>
+    <Fragment slot='description'>
+      {!isDraft && enableComment && <PageInfo comment class='mt-1' />}
+    </Fragment>
+  </Hero>
+
+  <slot />
+
+  <Fragment slot='bottom'>
+    {/* Wikilinks: Outgoing & Backlinks */}
+    {
+      (outgoingLinks.length > 0 || backlinks.length > 0) && (
+        <div id='wikilinks-section' class='wikilinks-container mt-3 sm:mt-6 flex flex-col gap-3'>
+          {outgoingLinks.length > 0 && <OutgoingLinks links={outgoingLinks} />}
+          {backlinks.length > 0 && <Backlinks backlinks={backlinks} currentPostId={id} />}
+        </div>
+      )
+    }
+    {/* Copyright */}
+    <Copyright {data} class='mt-3 sm:mt-6' />
+    {/* Article recommend */}
+    <ArticleBottom collections={posts} {id} class='mt-3 sm:mt-6' />
+    {/* Comment */}
+    {!isDraft && enableComment && config.integ.giscus?.enable && <Giscus class='mt-3 sm:mt-6' />}
+  </Fragment>
+
+  <GraphView
+    currentSlug={`blog/${id}`}
+    slot='bottom-sidebar'
+    id='blog-graph-view'
+    class='blog-graph-view'
+  />
+</PageLayout>
+
+{config.integ.mediumZoom.enable && <MediumZoom />}
+
+<script>
+  import('@/components/scripts/wikilink-preview.ts').catch((err) => {
+    console.error('Failed to load wikilink preview:', err)
+  })
+</script>
+
+<script>
+  /**
+   * Enhanced anchor navigation: scroll-to-center + highlight animation
+   * Handles: footnote refs, footnote backrefs, wikilink in-page locate
+   */
+  function scrollToAndHighlight(target: Element, highlightClass = 'anchor-highlight') {
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    target.classList.add(highlightClass)
+    setTimeout(() => target.classList.remove(highlightClass), 2400)
+  }
+
+  // Intercept footnote reference clicks (sup a[data-footnote-ref])
+  document.querySelectorAll('a[data-footnote-ref]').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const href = (link as HTMLAnchorElement).getAttribute('href')
+      if (!href?.startsWith('#')) return
+      const target = document.getElementById(href.slice(1))
+      if (!target) return
+      e.preventDefault()
+      scrollToAndHighlight(target)
+    })
+  })
+
+  // Intercept footnote backref clicks (a.data-footnote-backref)
+  document.querySelectorAll('a.data-footnote-backref').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const href = (link as HTMLAnchorElement).getAttribute('href')
+      if (!href?.startsWith('#')) return
+      const target = document.getElementById(href.slice(1))
+      if (!target) return
+      e.preventDefault()
+      scrollToAndHighlight(target)
+    })
+  })
+</script>
+
+<script>
+  // Helper function to locate and highlight a wikilink
+  function locateWikilink(target: string) {
+    const wikilinks = document.querySelectorAll('a.wikilink')
+    for (const link of wikilinks) {
+      const href = link.getAttribute('href') || ''
+      if (href.includes(target)) {
+        link.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        link.classList.add('wikilink-highlight')
+        setTimeout(() => link.classList.remove('wikilink-highlight'), 2000)
+        return true
+      }
+    }
+    return false
+  }
+
+  // Handle URL locate parameter (from backlinks)
+  const urlParams = new URLSearchParams(window.location.search)
+  const locateTarget = urlParams.get('locate')
+  if (locateTarget) {
+    setTimeout(() => {
+      locateWikilink(locateTarget)
+      window.history.replaceState({}, '', window.location.pathname + window.location.hash)
+    }, 500)
+  }
+
+  // Build index map: targetId -> first occurrence index
+  const wikilinks = document.querySelectorAll('a.wikilink')
+  const indexMap = new Map<string, number>()
+  let currentIndex = 1
+
+  wikilinks.forEach((link) => {
+    const href = link.getAttribute('href') || ''
+    const match = href.match(/\/blog\/([^/]+)/)
+    if (!match) return
+
+    const targetId = match[1]
+    if (!indexMap.has(targetId)) {
+      indexMap.set(targetId, currentIndex++)
+    }
+  })
+
+  // Add numbered locate buttons to wikilinks in article
+  wikilinks.forEach((link) => {
+    const href = link.getAttribute('href') || ''
+    const match = href.match(/\/blog\/([^/]+)/)
+    if (!match) return
+
+    const targetId = match[1]
+    const index = indexMap.get(targetId)
+    if (!index) return
+
+    // Create numbered locate button with hover animation
+    const btn = document.createElement('button')
+    btn.className = 'wikilink-locate-btn'
+    btn.title = '定位到相关链接'
+    btn.dataset.index = String(index)
+    btn.innerHTML = `<span class="btn-number">${index}</span><span class="btn-arrow">↓</span>`
+    btn.addEventListener('click', (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      const section = document.getElementById('wikilinks-section')
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+        // Find and highlight the corresponding link by index
+        setTimeout(() => {
+          const row = section.querySelector(`.links-row[data-index="${index}"]`)
+          if (row) {
+            row.classList.add('links-row-highlight')
+            setTimeout(() => row.classList.remove('links-row-highlight'), 2000)
+          }
+        }, 500)
+      }
+    })
+
+    // Insert button after the link
+    link.parentNode?.insertBefore(btn, link.nextSibling)
+  })
+
+  // Add index numbers to outgoing links section
+  const outgoingSection = document.querySelector('.outgoing-links-section')
+  if (outgoingSection) {
+    const rows = outgoingSection.querySelectorAll('.links-row')
+    rows.forEach((row) => {
+      const link = row.querySelector('a.links-link')
+      if (!link) return
+
+      const href = link.getAttribute('href') || ''
+      const match = href.match(/\/blog\/([^/]+)/)
+      if (!match) return
+
+      const targetId = match[1]
+      const index = indexMap.get(targetId)
+      if (!index) return
+
+      // Add data-index attribute
+      row.setAttribute('data-index', String(index))
+
+      // Add index badge
+      const badge = document.createElement('span')
+      badge.className = 'links-index'
+      badge.textContent = String(index)
+      row.insertBefore(badge, row.firstChild)
+    })
+  }
+
+  // Align GraphView canvas with corresponding content
+  function alignGraphView() {
+    const graphView = document.getElementById('blog-graph-view')
+    if (!graphView) return
+
+    const graphHeader = graphView.querySelector('.graph-view-header') as HTMLElement
+    if (!graphHeader) return
+
+    // Check for outgoing links (相关链接)
+    const outgoingLinks = document.querySelector('.outgoing-links-section') as HTMLElement
+    // Check for backlinks (反向链接) - look for section with links-header but not outgoing-links-section
+    const backlinks = Array.from(document.querySelectorAll('section')).find(
+      (section) =>
+        section.querySelector('.links-header') &&
+        !section.classList.contains('outgoing-links-section')
+    ) as HTMLElement
+
+    // Find target element to align with
+    let targetElement: HTMLElement | null = null
+
+    if (outgoingLinks) {
+      // Align with outgoing links (相关链接)
+      targetElement = outgoingLinks
+    } else if (backlinks) {
+      // Align with backlinks (反向链接)
+      targetElement = backlinks
+    } else {
+      // Align with Copyright
+      const copyrightSection = document.querySelector(
+        '.bottom > div:first-child > div.relative'
+      ) as HTMLElement
+      if (copyrightSection) {
+        targetElement = copyrightSection
+      }
+    }
+
+    if (!targetElement) {
+      graphView.style.marginTop = '0px'
+      return
+    }
+
+    // Get the bottom container for reference
+    const bottomContainer = document.querySelector('.bottom') as HTMLElement
+    if (!bottomContainer) return
+
+    // Get positions relative to viewport
+    const targetRect = targetElement.getBoundingClientRect()
+    const graphViewRect = graphView.getBoundingClientRect()
+    const bottomContainerRect = bottomContainer.getBoundingClientRect()
+
+    // Calculate positions relative to bottom container
+    const targetTopRelative = targetRect.top - bottomContainerRect.top
+    const graphViewTopRelative = graphViewRect.top - bottomContainerRect.top
+
+    // Calculate graph header height including margin
+    const headerHeight = graphHeader.offsetHeight
+    const headerMarginBottom = parseFloat(getComputedStyle(graphHeader).marginBottom) || 0
+    const totalHeaderHeight = headerHeight + headerMarginBottom
+
+    // Calculate where graph-canvas will be positioned
+    // graph-canvas top = graphView top (relative to bottom) + header height + margin-top
+    // We want: graph-canvas top = target top (relative to bottom)
+    // So: margin-top = target top - graphView top - header height
+    const requiredMarginTop = targetTopRelative - graphViewTopRelative - totalHeaderHeight
+
+    // Apply margin-top (ensure it's not negative)
+    graphView.style.marginTop = `${Math.max(0, requiredMarginTop)}px`
+  }
+
+  // Run alignment after DOM is ready
+  function runAlignment() {
+    // Use setTimeout to ensure all content is rendered
+    setTimeout(alignGraphView, 100)
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runAlignment)
+  } else {
+    runAlignment()
+  }
+
+  // Re-align on window resize
+  let resizeTimeout: ReturnType<typeof setTimeout>
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout)
+    resizeTimeout = setTimeout(alignGraphView, 150)
+  })
+</script>
+
+<style>
+  /* GraphView alignment will be handled by JavaScript */
+  .blog-graph-view {
+    margin-top: 0;
+  }
+</style>
+
+<style is:global>
+  .wikilink-locate-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.125rem;
+    height: 1.125rem;
+    margin-left: 0.2rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: hsl(var(--primary) / 0.15);
+    color: hsl(var(--primary));
+    font-size: 0.625rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    vertical-align: middle;
+    overflow: hidden;
+  }
+  .wikilink-locate-btn .btn-number,
+  .wikilink-locate-btn .btn-arrow {
+    position: absolute;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .wikilink-locate-btn .btn-number {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .wikilink-locate-btn .btn-arrow {
+    opacity: 0;
+    transform: translateY(-8px);
+    font-size: 0.75rem;
+  }
+  .wikilink-locate-btn:hover {
+    background-color: hsl(var(--primary) / 0.9);
+    color: hsl(var(--background));
+    transform: scale(1.15);
+    box-shadow: 0 2px 8px hsl(var(--primary) / 0.3);
+  }
+  .wikilink-locate-btn:hover .btn-number {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  .wikilink-locate-btn:hover .btn-arrow {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .links-index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 0.25rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: hsl(var(--primary));
+    background: hsl(var(--primary) / 0.12);
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+  }
+  .links-row:hover .links-index {
+    background: hsl(var(--primary) / 0.9);
+    color: hsl(var(--background));
+  }
+  .links-row-highlight {
+    animation: row-pulse 0.5s ease-in-out 3;
+  }
+  .links-row-highlight .links-index {
+    animation: index-pulse 0.5s ease-in-out 3;
+  }
+  @keyframes row-pulse {
+    0%,
+    100% {
+      background-color: transparent;
+    }
+    50% {
+      background-color: hsl(var(--primary) / 0.1);
+    }
+  }
+  @keyframes index-pulse {
+    0%,
+    100% {
+      background: hsl(var(--primary) / 0.12);
+      color: hsl(var(--primary));
+    }
+    50% {
+      background: hsl(var(--primary) / 0.9);
+      color: hsl(var(--background));
+    }
+  }
+</style>

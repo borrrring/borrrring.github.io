@@ -1,0 +1,99 @@
+---
+interface Props {
+  class?: string
+}
+
+const { class: className } = Astro.props
+---
+
+<div id="giscus" class={className}></div>
+
+<script>
+  // Giscus配置
+  const giscusConfig = {
+    repo: 'LemonAdorable/lemonadorable.github.io',
+    repoId: 'R_kgDOLJXF6A',
+    category: 'Announcements',
+    categoryId: 'DIC_kwDOLJXF6M4Ccs4x',
+    mapping: 'pathname',
+    strict: '0',
+    reactionsEnabled: '1',
+    emitMetadata: '1',
+    inputPosition: 'top',
+    lang: 'zh-CN',
+    loading: 'lazy',
+    crossorigin: 'anonymous'
+  }
+
+  // 获取当前主题
+  function getTheme() {
+    const isDark = document.documentElement.classList.contains('dark')
+    return isDark ? 'transparent_dark' : 'light'
+  }
+
+  // 更新Giscus主题
+  function updateGiscusTheme() {
+    const theme = getTheme()
+    const iframe = document.querySelector('iframe.giscus-frame') as HTMLIFrameElement | null
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage(
+        { giscus: { setConfig: { theme } } },
+        'https://giscus.app'
+      )
+    }
+  }
+
+  // 初始化Giscus
+  function initGiscus() {
+    const script = document.createElement('script')
+    script.src = 'https://giscus.app/client.js'
+    script.setAttribute('data-repo', giscusConfig.repo)
+    script.setAttribute('data-repo-id', giscusConfig.repoId)
+    script.setAttribute('data-category', giscusConfig.category)
+    script.setAttribute('data-category-id', giscusConfig.categoryId)
+    script.setAttribute('data-mapping', giscusConfig.mapping)
+    script.setAttribute('data-strict', giscusConfig.strict)
+    script.setAttribute('data-reactions-enabled', giscusConfig.reactionsEnabled)
+    script.setAttribute('data-emit-metadata', giscusConfig.emitMetadata)
+    script.setAttribute('data-input-position', giscusConfig.inputPosition)
+    script.setAttribute('data-theme', getTheme())
+    script.setAttribute('data-lang', giscusConfig.lang)
+    script.setAttribute('data-loading', giscusConfig.loading)
+    script.setAttribute('crossorigin', giscusConfig.crossorigin)
+    script.async = true
+
+    const container = document.getElementById('giscus')
+    if (container) {
+      container.appendChild(script)
+    }
+  }
+
+  // 监听主题切换
+  function setupThemeListener() {
+    const observer = new MutationObserver(() => {
+      updateGiscusTheme()
+    })
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    })
+  }
+
+  // 页面加载完成后初始化
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      initGiscus()
+      setupThemeListener()
+    })
+  } else {
+    initGiscus()
+    setupThemeListener()
+  }
+</script>
+
+<style>
+  #giscus {
+    margin-top: 2rem;
+  }
+</style>
+

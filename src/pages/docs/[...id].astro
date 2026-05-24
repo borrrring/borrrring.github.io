@@ -1,0 +1,99 @@
+---
+import { render, type CollectionEntry } from 'astro:content'
+
+import { MediumZoom } from 'astro-pure/advanced'
+import { GraphView, TOC } from 'astro-pure/components/pages'
+import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
+import { Button } from 'astro-pure/user'
+import PageLayout from '@/layouts/ContentLayout.astro'
+import HelpSupport from '@/components/docs/HelpSupport.astro'
+
+import DocsContents from './DocsContents.astro'
+
+export const prerender = true
+
+export async function getStaticPaths() {
+  const posts = sortMDByDate(await getBlogCollection('docs'))
+  return posts.map((post) => ({
+    params: { id: post.id },
+    props: { post }
+  }))
+}
+
+type Props = {
+  post: CollectionEntry<'docs'>
+}
+
+const { post } = Astro.props
+const { Content, headings } = await render(post)
+const { description, title } = post.data
+
+const editPath = `https://github.com/cworld1/astro-theme-pure/edit/main/${post.filePath}`
+---
+
+<PageLayout meta={{ description, title }} back='/docs'>
+  <Fragment slot='sidebar'>
+    <GraphView currentSlug={`docs/${post.id}`} />
+    {!!headings.length && <TOC {headings} />}
+    <DocsContents class='docs-toc block mt-3' />
+  </Fragment>
+
+  <Fragment slot='header'>
+    <div class='mb-8 rounded-2xl bg-muted/30 px-6 py-5 shadow-sm'>
+      <h1 class='text-3xl font-bold tracking-tight text-foreground sm:text-4xl'>
+        {title}
+      </h1>
+      {
+        description && (
+          <div class='mt-3 text-sm leading-6 text-muted-foreground'>
+            <p class='italic text-foreground/80'>{description}</p>
+          </div>
+        )
+      }
+    </div>
+  </Fragment>
+
+  <Content />
+
+  <div slot='bottom'>
+    <HelpSupport editPath={editPath} />
+
+    {/* Show docs contents grid */}
+    <div class='mt-10'>
+      <h3 class='text-xl font-bold text-foreground tracking-tight mb-2'>探索更多</h3>
+      <p class='text-sm text-muted-foreground mb-6'>发现知识库中的更多指南与资源</p>
+      <DocsContents layout='grid' class='!mt-0' />
+    </div>
+  </div>
+</PageLayout>
+<MediumZoom />
+
+<style>
+  @media (min-width: 1300px) {
+    :global(main),
+    :global(.bottom) {
+      transform: translateX(7.9rem);
+    }
+    :global(#sidebar) {
+      overflow: inherit;
+    }
+    :global(toc-heading) {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    :global(toc-heading > ul) {
+      overflow-y: scroll;
+    }
+
+    :global(.docs-toc) {
+      position: fixed;
+      top: 0;
+      left: -64rem;
+      margin-top: 0;
+      max-height: calc(100vh - 7rem);
+      overflow-y: auto;
+      padding-right: 1rem !important;
+    }
+  }
+</style>

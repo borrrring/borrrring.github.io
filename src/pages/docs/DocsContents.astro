@@ -1,0 +1,167 @@
+---
+import { type CollectionEntry } from 'astro:content'
+
+import { getBlogCollection } from 'astro-pure/server'
+import { Icon } from 'astro-pure/user'
+import { cn } from 'astro-pure/utils'
+
+export const prerender = true
+export const partial = true
+
+const docsCollection = (await getBlogCollection('docs')) as CollectionEntry<'docs'>[]
+// Group docs by id first part (setup, integrations, advanced, etc.)
+const docsByCate = docsCollection.reduce((acc: { [key: string]: typeof docsCollection }, doc) => {
+  const id = doc.id.split('/')[0]
+  if (!acc[id]) acc[id] = [] as typeof docsCollection
+  acc[id].push(doc)
+  return acc
+}, {})
+
+const docCategories: Record<string, { title: string; icon: string; desc: string }> = {
+  setup: { title: 'Setup', icon: 'list', desc: 'Get your project up and running.' },
+  integrations: {
+    title: 'Integrations',
+    icon: 'package',
+    desc: 'Add plugins, components, and functionalities.'
+  },
+  advanced: {
+    title: 'Advanced',
+    icon: 'bulb',
+    desc: 'Deep dive into complex usages and concepts.'
+  }
+}
+
+type Props = {
+  class?: string
+  title?: boolean
+  layout?: 'grid' | 'list'
+}
+
+const { class: className, title = true, layout = 'list', ...props } = Astro.props
+---
+
+<docs-toc
+  class={cn('not-prose', className, layout === 'grid' ? 'grid-layout w-full' : 'list-layout')}
+  {...props}
+>
+  {
+    layout === 'grid' ? (
+      <div class='mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full items-stretch'>
+        {Object.entries(docCategories).map(([id, meta]) => (
+          <div class='group relative flex flex-col h-full gap-y-3 rounded-2xl border bg-background/50 p-6 shadow-sm transition-all hover:shadow-md hover:border-primary/50 overflow-hidden'>
+            {/* Subtle light effect on hover */}
+            <div class='absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent opacity-0 transition-opacity group-hover:opacity-100' />
+
+            <div class='flex items-center gap-x-3 mb-2'>
+              <div class='flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/20'>
+                <Icon name={meta.icon as any} class='size-5' />
+              </div>
+              <h3 class='text-lg font-semibold tracking-tight text-foreground'>{meta.title}</h3>
+            </div>
+
+            <p class='text-sm text-muted-foreground mb-2 line-clamp-2'>{meta.desc}</p>
+
+            <ul class='flex flex-col gap-y-1.5 flex-1'>
+              {docsByCate[id]
+                ?.sort((a, b) => a.data.order - b.data.order)
+                .map((doc) => (
+                  <li class='docs-item relative flex items-center group/item'>
+                    <Icon
+                      name='document'
+                      class='size-3 me-2 text-muted-foreground opacity-50 transition-transform group-hover/item:translate-x-0.5 group-hover/item:text-primary'
+                    />
+                    <a
+                      class='flex-1 truncate text-sm text-foreground/80 transition-colors hover:text-primary'
+                      href={`/docs/${doc.id}`}
+                    >
+                      {doc.data.title}
+                    </a>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <>
+        {title && <h2 class='text-foreground font-medium mb-4 mt-0'>DOCS</h2>}
+        <ul class='flex flex-col gap-y-5 m-0 p-0 list-none'>
+          {Object.entries(docCategories).map(([id, meta]) => (
+            <li class='m-0 p-0 text-base'>
+              <h3 class='text-muted-foreground text-xs font-semibold tracking-widest uppercase mb-2 mt-0'>
+                {meta.title}
+              </h3>
+              <ul class='flex flex-col m-0 p-0 list-none'>
+                {docsByCate[id]
+                  ?.sort((a, b) => a.data.order - b.data.order)
+                  .map((doc) => (
+                    <li class='docs-item flex relative ms-2 px-3 py-1.5 text-foreground/75 transition-all w-[calc(100%-0.5rem)] rounded-xl'>
+                      <a class='flex-1 hover:text-foreground line-clamp-2' href={`/docs/${doc.id}`}>
+                        {doc.data.title}
+                      </a>
+                    </li>
+                  ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
+      </>
+    )
+  }
+</docs-toc>
+
+<style>
+  docs-toc.list-layout .docs-item::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 5%;
+    bottom: 5%;
+    left: -0.5rem;
+    width: 2px;
+    background-color: hsl(var(--input) / var(--un-bg-opacity));
+  }
+
+  docs-toc :global(.docs-item.docs-hl) {
+    font-weight: 500;
+
+    & a {
+      color: hsl(var(--primary) / var(--un-text-opacity));
+    }
+
+    & [data-icon] {
+      color: hsl(var(--primary) / var(--un-text-opacity));
+      opacity: 1;
+    }
+  }
+
+  docs-toc.list-layout :global(.docs-item.docs-hl) {
+    background-color: hsl(var(--muted) / var(--un-bg-opacity));
+
+    &::before {
+      background-color: hsl(var(--primary) / var(--un-bg-opacity));
+    }
+  }
+</style>
+
+<script>
+  class DocsTOC extends HTMLElement {
+    link: string = ''
+
+    constructor() {
+      super()
+      this.link = window.location.pathname
+    }
+
+    connectedCallback() {
+      const links = this.querySelectorAll('a')
+      links.forEach((link) => {
+        if (link.getAttribute('href') === this.link) {
+          link.parentElement?.classList.add('docs-hl')
+        }
+      })
+    }
+  }
+
+  customElements.define('docs-toc', DocsTOC)
+</script>

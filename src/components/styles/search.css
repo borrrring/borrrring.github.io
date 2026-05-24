@@ -1,0 +1,697 @@
+.search {
+  min-width: fit-content;
+  max-width: 14rem;
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .search {
+    flex-grow: 0.3;
+    max-width: none;
+  }
+}
+
+.search>.search-button {
+  background-color: transparent;
+  border: none;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: inherit;
+  height: 2rem;
+  padding: 0 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  width: auto;
+  min-width: 2rem;
+  transition: background-color 0.2s ease;
+}
+
+.search>.search-button:hover {
+  background-color: hsl(var(--muted) / var(--un-bg-opacity, 1));
+}
+
+.search>.search-button>svg {
+  cursor: pointer;
+  width: 1.25rem;
+  height: 1.25rem;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+  color: hsl(var(--foreground) / var(--un-text-opacity, 1));
+  transition: color 0.2s ease;
+}
+
+.search>.search-container,
+.search-container {
+  position: fixed;
+  contain: layout;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100vh;
+  overflow-y: auto;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+  background-color: transparent;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  isolation: isolate;
+}
+
+.search>.search-container.active,
+.search-container.active {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.search>.search-container>.search-space,
+.search-container>.search-space {
+  width: 65%;
+  margin-top: 8vh;
+  margin-left: auto;
+  margin-right: auto;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search>.search-container>.search-space.centered,
+.search-container>.search-space.centered {
+  transform: translateY(22vh);
+  width: 50%;
+  max-width: 600px;
+}
+
+@media (max-width: 1024px) {
+
+  .search>.search-container>.search-space,
+  .search-container>.search-space {
+    width: 90%;
+  }
+}
+
+.search>.search-container>.search-space>*,
+.search-container>.search-space>* {
+  width: 100%;
+  border-radius: 7px;
+  background: hsl(var(--background) / 0.6);
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 14px 50px rgba(27, 33, 48, 0.08),
+    0 10px 30px rgba(27, 33, 48, 0.1);
+  margin-bottom: 1em;
+}
+
+.search>.search-container>.search-space>input,
+.search-container>.search-space>input {
+  box-sizing: border-box;
+  padding: 0.5em 1em;
+  font-family: inherit;
+  color: hsl(var(--foreground) / var(--un-text-opacity, 1));
+  font-size: 1em;
+  border: 1px solid hsl(var(--border) / var(--un-border-opacity, 1));
+  background-color: hsl(var(--background) / 0.6);
+  backdrop-filter: blur(8px);
+  border-radius: 7px;
+  transition: border-radius 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search>.search-container>.search-space:not(.centered)>input,
+.search-container>.search-space:not(.centered)>input {
+  border-radius: 7px 7px 0 0;
+}
+
+.search>.search-container>.search-space>input:focus,
+.search-container>.search-space>input:focus {
+  outline: none;
+  border-color: hsl(var(--primary) / var(--un-border-opacity, 1));
+}
+
+.search>.search-container>.search-space>.search-filters,
+.search-container>.search-space>.search-filters {
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid hsl(var(--border) / var(--un-border-opacity, 1));
+  background: hsl(var(--background) / 0.6);
+  backdrop-filter: blur(8px);
+  border-radius: 0 0 7px 7px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  max-height: 0;
+  overflow: visible;
+  opacity: 0;
+  position: relative;
+  z-index: 100;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search>.search-container>.search-space:not(.centered)>.search-filters,
+.search-container>.search-space:not(.centered)>.search-filters {
+  max-height: 200px;
+  opacity: 1;
+  padding: 0.75rem;
+}
+
+.search>.search-container>.search-space>.search-filters .filter-group,
+.search-container>.search-space>.search-filters .filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  flex: 1;
+  min-width: 140px;
+}
+
+.search>.search-container>.search-space>.search-filters .filter-label,
+.search-container>.search-space>.search-filters .filter-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: hsl(var(--foreground) / var(--un-text-opacity, 1));
+}
+
+.search>.search-container>.search-space>.search-filters .filter-multiselect,
+.search-container>.search-space>.search-filters .filter-multiselect {
+  position: relative;
+  width: 100%;
+  max-width: 180px;
+  z-index: 101;
+}
+
+.search>.search-container>.search-space>.search-filters .filter-multiselect-button,
+.search-container>.search-space>.search-filters .filter-multiselect-button {
+  width: 100%;
+  max-width: 180px;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid hsl(var(--border) / var(--un-border-opacity, 1));
+  border-radius: 4px;
+  background-color: hsl(var(--background) / var(--un-bg-opacity, 1));
+  color: hsl(var(--foreground) / var(--un-text-opacity, 1));
+  font-size: 0.8125rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: border-color 0.2s ease;
+}
+
+.search>.search-container>.search-space>.search-filters .filter-multiselect-button:hover,
+.search-container>.search-space>.search-filters .filter-multiselect-button:hover {
+  border-color: hsl(var(--primary) / var(--un-border-opacity, 1));
+}
+
+.search>.search-container>.search-space>.search-filters .filter-multiselect-button:focus,
+.search-container>.search-space>.search-filters .filter-multiselect-button:focus {
+  outline: none;
+  border-color: hsl(var(--primary) / var(--un-border-opacity, 1));
+}
+
+.search>.search-container>.search-space>.search-filters .filter-multiselect-text,
+.search-container>.search-space>.search-filters .filter-multiselect-text {
+  flex: 1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search>.search-container>.search-space>.search-filters .filter-multiselect-arrow,
+.search-container>.search-space>.search-filters .filter-multiselect-arrow {
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.search>.search-container>.search-space>.search-filters .filter-multiselect.open .filter-multiselect-arrow,
+.search-container>.search-space>.search-filters .filter-multiselect.open .filter-multiselect-arrow {
+  transform: rotate(180deg);
+}
+
+.search>.search-container>.search-space>.search-filters .filter-multiselect-dropdown,
+.search-container>.search-space>.search-filters .filter-multiselect-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.25rem;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid hsl(var(--border) / var(--un-border-opacity, 1));
+  border-radius: 4px;
+  background-color: hsl(var(--background) / var(--un-bg-opacity, 1));
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10001;
+  display: none;
+  flex-direction: column;
+  width: 100%;
+  min-width: 180px;
+}
+
+.search>.search-container>.search-space>.search-filters .filter-multiselect.open .filter-multiselect-dropdown,
+.search-container>.search-space>.search-filters .filter-multiselect.open .filter-multiselect-dropdown {
+  display: flex;
+}
+
+.search>.search-container>.search-space>.search-filters .filter-multiselect-option,
+.search-container>.search-space>.search-filters .filter-multiselect-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  color: hsl(var(--foreground) / var(--un-text-opacity, 1));
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.search>.search-container>.search-space>.search-filters .filter-multiselect-option:hover,
+.search-container>.search-space>.search-filters .filter-multiselect-option:hover {
+  background-color: hsl(var(--muted) / var(--un-bg-opacity, 1));
+}
+
+.search>.search-container>.search-space>.search-filters .filter-multiselect-option input[type="checkbox"],
+.search-container>.search-space>.search-filters .filter-multiselect-option input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+  accent-color: hsl(var(--primary) / var(--un-text-opacity, 1));
+  flex-shrink: 0;
+}
+
+.search>.search-container>.search-space>.search-filters .filter-select,
+.search-container>.search-space>.search-filters .filter-select {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid hsl(var(--border) / var(--un-border-opacity, 1));
+  border-radius: 4px;
+  background-color: hsl(var(--background) / var(--un-bg-opacity, 1));
+  color: hsl(var(--foreground) / var(--un-text-opacity, 1));
+  font-size: 0.8125rem;
+  cursor: pointer;
+  width: 100%;
+  max-width: 180px;
+}
+
+.search>.search-container>.search-space>.search-filters .filter-select:focus,
+.search-container>.search-space>.search-filters .filter-select:focus {
+  outline: none;
+  border-color: hsl(var(--primary) / var(--un-border-opacity, 1));
+}
+
+.search>.search-container>.search-space>.search-layout,
+.search-container>.search-space>.search-layout {
+  display: none;
+  flex-direction: row;
+  border: 1px solid hsl(var(--border) / var(--un-border-opacity, 1));
+  flex: 0 0 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+}
+
+.search>.search-container>.search-space>.search-layout.display-results,
+.search-container>.search-space>.search-layout.display-results {
+  display: flex;
+}
+
+.search>.search-container>.search-space>.search-layout[data-preview]>.results-container,
+.search-container>.search-space>.search-layout[data-preview]>.results-container {
+  flex: 0 0 min(30%, 450px);
+}
+
+.search>.search-container>.search-space>.search-layout[data-preview]>.preview-container,
+.search-container>.search-space>.search-layout[data-preview]>.preview-container {
+  flex: 1 1 auto;
+}
+
+/* Removed .markers-container flex rules to allow absolute positioning */
+
+@media (min-width: 640px) {
+
+  .search>.search-container>.search-space>.search-layout[data-preview] .result-card>p.preview,
+  .search-container>.search-space>.search-layout[data-preview] .result-card>p.preview {
+    display: none;
+  }
+
+  .search>.search-container>.search-space>.search-layout[data-preview]>.results-container,
+  .search-container>.search-space>.search-layout[data-preview]>.results-container {
+    border-right: 1px solid hsl(var(--border) / var(--un-border-opacity, 1));
+    border-top-right-radius: unset;
+    border-bottom-right-radius: unset;
+  }
+
+  .search>.search-container>.search-space>.search-layout[data-preview]>.preview-container,
+  .search-container>.search-space>.search-layout[data-preview]>.preview-container {
+    /* No border-right needed because it's now the rightmost element */
+    border-top-left-radius: unset;
+    border-bottom-left-radius: unset;
+  }
+}
+
+.search>.search-container>.search-space>.search-layout>div,
+.search-container>.search-space>.search-layout>div {
+  height: calc(70vh - 8vh);
+  border-radius: 5px;
+  background: hsl(var(--background) / 0.6);
+  backdrop-filter: blur(8px);
+}
+
+@media (max-width: 640px) {
+
+  .search>.search-container>.search-space>.search-layout,
+  .search-container>.search-space>.search-layout {
+    flex-direction: column;
+  }
+
+  .search>.search-container>.search-space>.search-layout>.preview-container,
+  .search-container>.search-space>.search-layout>.preview-container {
+    display: none !important;
+  }
+
+  .search>.search-container>.search-space>.search-layout>.markers-container,
+  .search-container>.search-space>.search-layout>.markers-container {
+    display: none !important;
+  }
+
+  .search>.search-container>.search-space>.search-layout[data-preview]>.results-container,
+  .search-container>.search-space>.search-layout[data-preview]>.results-container {
+    width: 100%;
+    height: auto;
+    flex: 0 0 100%;
+  }
+}
+
+.search>.search-container>.search-space>.search-layout .highlight,
+.search-container>.search-space>.search-layout .highlight {
+  background: color-mix(in srgb, hsl(var(--primary) / 0.6), rgba(255, 255, 255, 0));
+  border-radius: 5px;
+  scroll-margin-top: 2rem;
+}
+
+.search>.search-container>.search-space>.search-layout>.preview-container,
+.search-container>.search-space>.search-layout>.preview-container {
+  flex-grow: 1;
+  display: block;
+  overflow: hidden;
+  font-family: inherit;
+  color: hsl(var(--foreground) / var(--un-text-opacity, 1));
+  line-height: 1.5em;
+  overflow-y: auto;
+  padding: 0 24px;
+  background: hsl(var(--background) / 0.6);
+  backdrop-filter: blur(8px);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Hide native scrollbar - replaced by custom JS viewport indicator */
+.search>.search-container>.search-space>.search-layout>.preview-container::-webkit-scrollbar,
+.search-container>.search-space>.search-layout>.preview-container::-webkit-scrollbar {
+  width: 0px !important;
+  display: none !important;
+}
+
+/* Also hide for Firefox */
+/* Firefox scrollbar - intentionally omitted scrollbar-width/scrollbar-color
+   because in modern Chromium, setting these disables -webkit-scrollbar pseudo-elements.
+   We rely on a custom JS viewport indicator instead. */
+
+.search>.search-container>.search-space>.search-layout>.preview-container .preview-inner,
+.search-container>.search-space>.search-layout>.preview-container .preview-inner {
+  margin: 0 auto;
+  width: min(100%, 100%);
+}
+
+.search>.search-container>.search-space>.search-layout>.preview-container a[role="anchor"],
+.search-container>.search-space>.search-layout>.preview-container a[role="anchor"] {
+  background-color: transparent;
+}
+
+.search>.search-container>.search-space>.search-layout>.preview-container .preview-breadcrumb,
+.search-container>.search-space>.search-layout>.preview-container .preview-breadcrumb {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid hsl(var(--border) / var(--un-border-opacity, 1));
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground) / var(--un-text-opacity, 1));
+}
+
+.search>.search-container>.search-space>.search-layout>.preview-container .preview-breadcrumb .breadcrumb-link,
+.search-container>.search-space>.search-layout>.preview-container .preview-breadcrumb .breadcrumb-link {
+  color: hsl(var(--primary) / var(--un-text-opacity, 1));
+  text-decoration: none;
+  transition: color 0.4s ease;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.search>.search-container>.search-space>.search-layout>.preview-container .preview-breadcrumb .breadcrumb-link:hover,
+.search-container>.search-space>.search-layout>.preview-container .preview-breadcrumb .breadcrumb-link:hover {
+  color: hsl(var(--primary) / var(--un-text-opacity, 0.8));
+  background-color: hsl(var(--muted) / var(--un-bg-opacity, 1));
+  text-decoration: underline;
+}
+
+.search>.search-container>.search-space>.search-layout>.preview-container .preview-breadcrumb .breadcrumb-current,
+.search-container>.search-space>.search-layout>.preview-container .preview-breadcrumb .breadcrumb-current {
+  color: hsl(var(--foreground) / var(--un-text-opacity, 1));
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+}
+
+.search>.search-container>.search-space>.search-layout>.preview-container .preview-breadcrumb .breadcrumb-separator,
+.search-container>.search-space>.search-layout>.preview-container .preview-breadcrumb .breadcrumb-separator {
+  color: hsl(var(--muted-foreground) / var(--un-text-opacity, 0.6));
+  margin: 0 0.125rem;
+}
+
+.search>.search-container>.search-space>.search-layout>.results-container,
+.search-container>.search-space>.search-layout>.results-container {
+  overflow-y: auto;
+  background: hsl(var(--background) / 0.6);
+  backdrop-filter: blur(8px);
+}
+
+.search>.search-container>.search-space>.search-layout>.results-container .result-card,
+.search-container>.search-space>.search-layout>.results-container .result-card {
+  overflow: hidden;
+  padding: 1em;
+  cursor: pointer;
+  transition: background 0.4s ease;
+  border-bottom: 1px solid hsl(var(--border) / var(--un-border-opacity, 1));
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
+  text-transform: none;
+  text-align: left;
+  outline: none;
+  font-weight: inherit;
+  text-decoration: none;
+  color: inherit;
+}
+
+.search>.search-container>.search-space>.search-layout>.results-container .result-card:hover,
+.search>.search-container>.search-space>.search-layout>.results-container .result-card:focus,
+.search-container>.search-space>.search-layout>.results-container .result-card:hover,
+.search-container>.search-space>.search-layout>.results-container .result-card:focus {
+  background: hsl(var(--muted) / var(--un-bg-opacity, 1));
+}
+
+.search>.search-container>.search-space>.search-layout>.results-container .result-card.focus,
+.search-container>.search-space>.search-layout>.results-container .result-card.focus {
+  background: rgba(177, 156, 217, 0.15);
+  border-left: 3px solid #B19CD9;
+  padding-left: calc(1em - 3px);
+}
+
+.search>.search-container>.search-space>.search-layout>.results-container .result-card>h3,
+.search-container>.search-space>.search-layout>.results-container .result-card>h3 {
+  margin: 0;
+  font-size: 1.1em;
+  font-weight: 600;
+  transition: color 0.4s ease;
+}
+
+
+
+.search>.search-container>.search-space>.search-layout>.results-container .result-card>ul.tags,
+.search-container>.search-space>.search-layout>.results-container .result-card>ul.tags {
+  margin-top: 0.45rem;
+  margin-bottom: 0;
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.search>.search-container>.search-space>.search-layout>.results-container .result-card>ul.tags>li>p,
+.search-container>.search-space>.search-layout>.results-container .result-card>ul.tags>li>p {
+  border-radius: 8px;
+  background-color: hsl(var(--muted) / var(--un-bg-opacity, 1));
+  padding: 0.2rem 0.4rem;
+  margin: 0;
+  line-height: 1.4rem;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground) / var(--un-text-opacity, 1));
+  font-size: 0.85em;
+}
+
+.search>.search-container>.search-space>.search-layout>.results-container .result-card>ul.tags>li>p.match-tag,
+.search-container>.search-space>.search-layout>.results-container .result-card>ul.tags>li>p.match-tag {
+  color: hsl(var(--primary) / var(--un-text-opacity, 1));
+}
+
+.search>.search-container>.search-space>.search-layout>.results-container .result-card>p,
+.search-container>.search-space>.search-layout>.results-container .result-card>p {
+  margin-bottom: 0;
+  margin-top: 0.5em;
+  color: hsl(var(--muted-foreground) / var(--un-text-opacity, 1));
+  font-size: 0.9em;
+}
+
+/* Markers container overlaying the scrollbar */
+.search>.search-container>.search-space>.search-layout>.markers-container,
+.search-container>.search-space>.search-layout>.markers-container {
+  display: flex !important;
+  flex-direction: column !important;
+  position: absolute !important;
+  right: 0 !important;
+  top: 0 !important;
+  height: 100% !important;
+  width: 14px !important;
+  /* Match 14px scrollbar width exactly */
+  z-index: 10 !important;
+  /* Behind the scrollbar thumb which is in the scrollbar layer, but above content */
+  pointer-events: none !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Scrollbar markers */
+.search>.search-container>.search-space>.search-layout>.markers-container .scrollbar-markers,
+.search-container>.search-space>.search-layout>.markers-container .scrollbar-markers {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.search>.search-container>.search-space>.search-layout>.markers-container .scrollbar-marker,
+.search-container>.search-space>.search-layout>.markers-container .scrollbar-marker {
+  position: absolute;
+  left: 7px;
+  /* Exactly center of 14px width */
+  transform: translateX(-50%) translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #B19CD9;
+  opacity: 1;
+  /* More visible markers */
+  cursor: pointer;
+  pointer-events: all;
+  transition: all 0.2s ease;
+  z-index: 11;
+}
+
+.search>.search-container>.search-space>.search-layout>.markers-container .scrollbar-marker:hover,
+.search-container>.search-space>.search-layout>.markers-container .scrollbar-marker:hover {
+  width: 8px;
+  height: 8px;
+  opacity: 1;
+  box-shadow: 0 0 6px rgba(177, 156, 217, 0.8);
+}
+
+.search>.search-container>.search-space>.search-layout>.markers-container .scrollbar-marker.active,
+.search-container>.search-space>.search-layout>.markers-container .scrollbar-marker.active {
+  width: 8px;
+  height: 8px;
+  opacity: 1;
+  box-shadow: 0 0 8px rgba(177, 156, 217, 0.8);
+}
+
+/* Custom viewport indicator (replaces native scrollbar thumb) */
+.search>.search-container>.search-space>.search-layout>.markers-container .viewport-indicator,
+.search-container>.search-space>.search-layout>.markers-container .viewport-indicator {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background: rgba(177, 156, 217, 0.35);
+  border-radius: 4px;
+  border: 1px solid rgba(177, 156, 217, 0.5);
+  pointer-events: auto;
+  cursor: grab;
+  z-index: 5;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  min-height: 20px;
+}
+
+.search>.search-container>.search-space>.search-layout>.markers-container .viewport-indicator:hover,
+.search-container>.search-space>.search-layout>.markers-container .viewport-indicator:hover {
+  background: rgba(177, 156, 217, 0.45);
+  border-color: rgba(177, 156, 217, 0.6);
+}
+
+.search>.search-container>.search-space>.search-layout>.markers-container .viewport-indicator:active,
+.search-container>.search-space>.search-layout>.markers-container .viewport-indicator:active,
+.search>.search-container>.search-space>.search-layout>.markers-container .viewport-indicator.dragging,
+.search-container>.search-space>.search-layout>.markers-container .viewport-indicator.dragging {
+  background: rgba(177, 156, 217, 0.55);
+  border-color: rgba(177, 156, 217, 0.8);
+  cursor: grabbing;
+}
+
+/* Red center line in viewport indicator */
+.search>.search-container>.search-space>.search-layout>.markers-container .viewport-indicator-line,
+.search-container>.search-space>.search-layout>.markers-container .viewport-indicator-line {
+  position: absolute;
+  top: 50%;
+  left: 1px;
+  right: 1px;
+  height: 2px;
+  background: rgba(255, 50, 50, 1);
+  border-radius: 1px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* Flash animation when clicking a scrollbar marker */
+@keyframes highlight-flash {
+
+  0%,
+  100% {
+    background-color: color-mix(in srgb, hsl(var(--primary) / 0.6), rgba(255, 255, 255, 0));
+    box-shadow: none;
+    outline: 2px solid transparent;
+  }
+
+  50% {
+    background-color: rgba(255, 210, 50, 0.55);
+    box-shadow: 0 0 12px 4px rgba(255, 210, 50, 0.5), 0 0 24px 8px hsl(var(--primary) / 0.3);
+    outline: 2px solid rgba(255, 210, 50, 0.7);
+  }
+}
+
+.search-container .highlight.flash-highlight {
+  animation: highlight-flash 0.5s ease-in-out 3;
+}

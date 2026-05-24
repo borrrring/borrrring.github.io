@@ -1,0 +1,86 @@
+---
+import links from '@/public/links.json'
+import config from 'virtual:config'
+
+import { Collapse, Timeline } from 'astro-pure/user'
+import PageLayout from '@/layouts/CommonPage.astro'
+import FriendList from '@/components/links/FriendList.astro'
+
+const headings = [
+  { depth: 2, slug: 'common-links', text: '常用链接' },
+  { depth: 2, slug: 'project-links', text: '项目链接' },
+  { depth: 2, slug: 'special-links', text: '特殊链接' },
+  { depth: 2, slug: 'apply-links', text: '申请友链' }
+]
+
+const { friends } = links
+const linksConf = config.integ.links
+const linkEditPage = 'https://github.com/cworld1/astro-theme-pure/blob/main/public/links.json'
+
+const projectLinks = {
+  id_name: 'project-links',
+  desc: 'My Projects',
+  link_list: [
+    {
+      name: 'Guadao',
+      intro: '去中心化内容社群',
+      link: 'https://guadao.vercel.app/',
+      avatar:
+        'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍉</text></svg>'
+    },
+    {
+      name: 'BullBear Dashboard',
+      intro: '加密市场牛熊状态机',
+      link: 'https://lemonadorable.github.io/bullbear-dashboard/',
+      avatar:
+        'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍉</text></svg>'
+    }
+  ]
+}
+---
+
+<PageLayout title='链接' {headings} comment hideBack>
+  <p>链接随机排序。</p>
+  <h2 id='common-links'>常用链接</h2>
+  <FriendList list={friends[0]} />
+  <Collapse title='状态异常的链接'>
+    <FriendList list={friends[1]} />
+  </Collapse>
+  <Collapse title='链接历史记录'>
+    <Timeline events={linksConf.logbook} />
+  </Collapse>
+
+  <h2 id='project-links'>项目链接</h2>
+  <FriendList list={projectLinks} />
+
+  <h2 id='special-links'>特殊链接</h2>
+  <FriendList list={friends[2]} />
+
+  <h2 id='apply-links'>申请友链</h2>
+  <p>本站信息（点击复制）：</p>
+  <blockquote class='not-prose grid grid-cols-[auto_1fr] gap-x-2 break-words border-s-4 ps-4'>
+    {
+      linksConf.applyTip.map(({ name, val }) => {
+        const script = `navigator.clipboard.writeText('${val}');document.dispatchEvent(new CustomEvent('toast',{detail:{message:'Copied "${val}" to clipboard!'}}))`
+        return (
+          <>
+            <span class='text-end'>{name}:</span>
+            <samp class='cursor-pointer' onclick={script}>
+              {val}
+            </samp>
+          </>
+        )
+      })
+    }
+  </blockquote>
+
+  <p>
+    可通过下方留言或 <a href={linkEditPage} target='_blank'>提交 PR</a> 申请友链。申请说明：
+  </p>
+  <ul>
+    <li>推荐了本站</li>
+    <li>站点活着且有正式域名</li>
+    <li>至少五篇原创文章且最近一年更新过</li>
+    <li>内容不违反国家法律</li>
+  </ul>
+</PageLayout>

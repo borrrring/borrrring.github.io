@@ -1,0 +1,213 @@
+---
+/**
+ * OutgoingLinks component - displays posts that the current post links to
+ * 外链组件 - 显示当前文章链接到的其他文章（正向链接）
+ */
+import type { Backlink } from '@/utils/backlinks'
+import { cn } from 'astro-pure/utils'
+
+interface Props {
+  links: Backlink[]
+  class?: string
+  title?: string
+}
+
+const { links, class: className, title = '相关链接' } = Astro.props
+
+// Format date helper
+function formatDate(date?: Date): string {
+  if (!date) return ''
+  return date.toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  })
+}
+---
+
+{
+  links.length > 0 && (
+    <section class={cn('outgoing-links-section rounded-xl border px-3 sm:px-4 py-2 sm:py-3', className)}>
+      <div class="links-header">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="text-muted-foreground"
+        >
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+          <polyline points="15 3 21 3 21 9" />
+          <line x1="10" y1="14" x2="21" y2="3" />
+        </svg>
+        <h3 class="links-title">{title}</h3>
+        <span class="links-count">({links.length})</span>
+      </div>
+
+      <ul class="links-list">
+        {links.map((link) => (
+          <li class="links-item">
+            <div class="links-row">
+              <a href={link.url} class="links-link group">
+                <span class="links-link-title">{link.title}</span>
+                {link.date && (
+                  <span class="links-date">{formatDate(link.date)}</span>
+                )}
+              </a>
+              <button
+                class="outgoing-locate-btn"
+                data-target={link.id}
+                title="定位到引用处"
+                aria-label="定位到引用处"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  .links-header {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .links-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+    margin: 0;
+  }
+
+  .links-count {
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .links-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .links-item {
+    padding: 0;
+  }
+
+  .links-row {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-inline: -0.5rem;
+    padding-inline-start: 0.5rem;
+    padding-inline-end: 0.25rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.15s ease;
+  }
+
+  .links-row:hover {
+    background-color: hsl(var(--muted));
+  }
+
+  .links-link {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.375rem 0.5rem;
+    text-decoration: none;
+    color: hsl(var(--foreground));
+    min-width: 0;
+  }
+
+  .links-link-title {
+    font-size: 0.875rem;
+    transition: color 0.15s ease;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .links-row:hover .links-link-title {
+    color: hsl(var(--primary));
+  }
+
+  .links-date {
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
+    flex-shrink: 0;
+  }
+
+  .outgoing-locate-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: none;
+    border-radius: 0.375rem;
+    background: transparent;
+    color: hsl(var(--muted-foreground));
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .outgoing-locate-btn:hover {
+    background-color: hsl(var(--primary) / 0.1);
+    color: hsl(var(--primary));
+  }
+</style>
+
+<script>
+  // Handle locate button clicks for outgoing links
+  document.querySelectorAll('.outgoing-locate-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault()
+      const target = (btn as HTMLElement).dataset.target
+      if (!target) return
+
+      // Find wikilink in the article content
+      const wikilinks = document.querySelectorAll('a.wikilink')
+      for (const link of wikilinks) {
+        const href = link.getAttribute('href') || ''
+        if (href.includes(target)) {
+          link.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          link.classList.add('wikilink-highlight')
+          setTimeout(() => link.classList.remove('wikilink-highlight'), 2000)
+          break
+        }
+      }
+    })
+  })
+</script>

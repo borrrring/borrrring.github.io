@@ -1,0 +1,163 @@
+---
+import { Image } from 'astro:assets'
+
+import { Button, Icon } from 'astro-pure/user'
+import PageLayout from '@/layouts/CommonPage.astro'
+import ProjectSection from '@/components/projects/ProjectSection.astro'
+import Sponsors from '@/components/projects/Sponsors.astro'
+import Sponsorship from '@/components/projects/Sponsorship.astro'
+import alipay from '@/assets/alipay-qrcode.jpg'
+import KeyIcon from '@/assets/icons/key.svg'
+import wechat from '@/assets/wechat-qrcode.jpg'
+
+const headings = [
+  { depth: 2, slug: 'programs', text: 'Programs' },
+  { depth: 2, slug: 'learnings', text: 'Learnings' },
+  { depth: 2, slug: 'others', text: 'Others' },
+  { depth: 2, slug: 'gpg-signature', text: 'GPG Signature' },
+  { depth: 2, slug: 'sponsorship', text: 'Sponsorship' }
+]
+---
+
+<PageLayout title='Projects' {headings} view hideBack>
+  {/* About astro-iris */}
+  <div class='not-prose flex justify-center'>
+    <a
+      href='/docs/advanced/about'
+      target='_blank'
+      class='flex items-center gap-x-3 rounded-full border bg-background px-4 py-2 text-sm shadow-sm transition-shadow hover:shadow-md'
+    >
+      <span class='size-2 rounded-full bg-green-400'></span>
+      <p class='font-medium text-muted-foreground'>About Astro-Theme-Iris Project</p>
+    </a>
+  </div>
+  <p>Github Activities:</p>
+  <div class='flex justify-center mt-2'>
+    <img
+      src='https://ghchart.rshah.org/659eb9/lemonadorable'
+      alt='github activities'
+      class='w-full h-auto max-w-[880px]'
+      loading='lazy'
+      decoding='async'
+      width='880'
+      height='110'
+    />
+  </div>
+  <p>
+    If you think it would be useful or interesting to collaborate on a project, you can donate to
+    support my work or contact me to discuss a project.
+  </p>
+  <Button title='Checkout sponsorship' class='w-fit' href='#sponsorship'>
+    <Icon class='size-5' name='receive-money' slot='before' />
+  </Button>
+
+  <h2 id='programs'>Programs</h2>
+  <ProjectSection
+    projects={[
+      {
+        name: 'Astro Theme Iris',
+        description: 'Pinned project on GitHub',
+        links: [{ type: 'github', href: 'https://github.com/LemonAdorable/astro-theme-iris' }]
+      },
+      {
+        name: 'Bullbear Dashboard',
+        description: 'Pinned project on GitHub',
+        links: [{ type: 'github', href: 'https://github.com/CrytoPlanet/bullbear-dashboard' }]
+      },
+      {
+        name: 'Guadao',
+        description: 'Pinned project on GitHub',
+        links: [{ type: 'github', href: 'https://github.com/CrytoPlanet/guadao' }]
+      }
+    ]}
+  />
+
+  <h2 id='learnings'>Learnings</h2>
+  <ProjectSection
+    class='my-2'
+    projects={[
+      {
+        name: 'Solidity',
+        description: 'Learning notes and code for Solidity',
+        links: [{ type: 'github', href: 'https://github.com/argotorg/solidity' }]
+      },
+      {
+        name: 'Qlib',
+        description: 'Learning notes and code for Qlib',
+        links: [{ type: 'github', href: 'https://github.com/microsoft/qlib' }]
+      }
+    ]}
+  />
+
+  <h2 id='others'>Others</h2>
+  <ProjectSection
+    projects={[
+      {
+        name: 'CWorld',
+        description: "CWorld's Github",
+        links: [{ type: 'github', href: 'https://github.com/cworld1' }]
+      },
+      {
+        name: 'LemonAdorable',
+        description: 'My Github',
+        links: [{ type: 'github', href: 'https://github.com/LemonAdorable' }]
+      }
+    ]}
+  />
+
+  <h2 id='gpg-signature'>GPG Signature</h2>
+  <p>
+    You can verify the authenticity of the files I signed by checking the GPG signature. My GPG key
+    is <code>114514</code>, and you can find it on the opengpg key servers or download from it.
+  </p>
+  <Button href='https://keys.openpgp.org/search?q=114514' title='Checkout my key' target='_blank'>
+    <KeyIcon class='size-5' slot='before' />
+  </Button>
+
+  <h2 id='sponsorship'>Sponsorship</h2>
+  <p>
+    Chinese methods: <a href='https://afdian.com/a/lemonadorable' target='_blank'>Afadian</a>,
+    Wechat or Alipay
+  </p>
+  <Sponsorship
+    methods={[
+      { name: 'WeChat', icon: 'wechat-pay', image: wechat },
+      { name: 'Alipay', icon: 'alipay', image: alipay }
+    ]}
+  />
+  <p>Global methods: <a href='https://ko-fi.com/lemonadorable' target='_blank'>Ko-fi</a></p>
+  <p>
+    Please leave a message or contact me proactively after sponsorship. My email is:
+    <code
+      style='cursor: pointer'
+      onclick='const m=atob(this.textContent);alert(m);window.open(`mailto:${m}`,"_blank")'
+      >bGVtb25hZG9yYWJsZUBnbWFpbC5jb20=</code
+    >
+    (click code to transform base64).
+  </p>
+  <p>Thanks to the following sponsors:</p>
+  <Sponsors
+    progressMax={50}
+    sponsors={[{ name: 'Anonymous', platform: 'Wechat', amount: 0, date: '2026-01-01' }]}
+  />
+</PageLayout>
+
+<style>
+  .sponsorship-card {
+    & .sponsorship-card-img {
+      opacity: 0.3;
+      --un-blur: blur(4px);
+      filter: var(--un-blur);
+    }
+
+    &:hover {
+      & .sponsorship-card-icon {
+        opacity: 0;
+      }
+      & .sponsorship-card-img {
+        opacity: 1;
+        --un-blur: blur(0);
+      }
+    }
+  }
+</style>

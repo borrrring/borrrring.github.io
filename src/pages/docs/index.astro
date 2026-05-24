@@ -1,0 +1,79 @@
+---
+import { Button, Icon } from 'astro-pure/user'
+import PageLayout from '@/layouts/BaseLayout.astro'
+
+import DocsContents from './DocsContents.astro'
+
+const meta = {
+  title: 'Documentation',
+  description: 'Official documentation and knowledge base'
+}
+---
+
+<PageLayout {meta}>
+  <main class='mt-6 lg:mt-10 flex flex-col items-center w-full'>
+    {/* Hero Section */}
+    <div
+      id='hero-header'
+      class='animate w-full flex flex-col items-center text-center py-12 px-4 md:py-20'
+    >
+      <div
+        class='mb-6 inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-medium text-primary shadow-sm'
+      >
+        <Icon name='earth' class='mr-2 size-4' />
+        Astro Theme Iris
+      </div>
+      <h1
+        class='text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl text-foreground mb-6'
+      >
+        Knowledge Base & <span class='text-primary drop-shadow-sm'>Documentation</span>
+      </h1>
+      <p class='max-w-2xl text-lg text-muted-foreground sm:text-xl'>
+        Explore comprehensive guides, API references, and advanced tutorials to build your site with
+        Iris.
+      </p>
+
+      <div class='mt-8 flex flex-wrap justify-center gap-4'>
+        <Button href='/docs/setup/getting-started' class='rounded-full px-8'> Get Started </Button>
+        <Button
+          href='https://github.com/LemonAdorable/astro-theme-iris'
+          target='_blank'
+          class='rounded-full px-8 bg-muted text-foreground/90 hover:bg-muted/80'
+        >
+          <Icon name='github' class='mr-2 size-5' /> View on GitHub
+        </Button>
+      </div>
+    </div>
+
+    {/* Content / Bento Config */}
+    <div id='content' class='animate w-full max-w-6xl px-4 mt-2 mb-10'>
+      <DocsContents layout='grid' />
+    </div>
+
+    {/* Auxiliary Resources Segment */}
+    <div
+      class='animate w-full max-w-4xl px-4 mt-4 pt-8 border-t flex flex-col md:flex-row items-center justify-between gap-6 pb-12'
+    >
+      <div class='flex items-center gap-4'>
+        <div class='p-3 bg-muted rounded-full'>
+          <Icon name='github' class='size-6 text-foreground/80' />
+        </div>
+        <div>
+          <h3 class='font-medium text-foreground'>Need Community Support?</h3>
+          <p class='text-sm text-muted-foreground'>
+            Find solutions or report an issue directly on GitHub.
+          </p>
+        </div>
+      </div>
+      <div>
+        <Button
+          href='https://github.com/cworld1/astro-theme-pure/issues'
+          target='_blank'
+          class='bg-muted text-foreground hover:bg-muted/80'
+        >
+          Open Issues
+        </Button>
+      </div>
+    </div>
+  </main>
+</PageLayout>
