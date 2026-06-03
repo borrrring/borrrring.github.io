@@ -40,3 +40,6 @@ bunfig.toml
 /src/content/blog/test.*
 /test/
 **/.obsidian/
+
+# Copilot auto-generated conversation files
+/src/content/blog/copilot/copilot-conversations/*@*.md
