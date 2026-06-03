@@ -1,104 +1,110 @@
-/* Theme - 浅蓝色系 */
+/* Furina Theme — Pneuma (Light) / Ousia (Dark) */
 
-/* ===== Water Ripple Background ===== */
+/* ===== Subtle Background Texture ===== */
 #bg-effects {
-  opacity: 0;
-  transition: opacity 1.2s ease;
-  overflow: hidden;
+  display: none;
 }
 
-/* Light mode: water ripples from center */
-html:not(.dark) #bg-effects {
-  opacity: 1 !important;
+
+
+/* ===== Furina Full-Page Background ===== */
+#furina-bg {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: -2;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse 70% 50% at 50% 45%, hsl(195 40% 88% / 0.1) 0%, transparent 70%);
+  overflow: hidden;
+  background-image: url('/images/my-furina.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  opacity: 1;
+  transition: opacity 0.5s ease;
 }
 
-/* Single set of concentric ripples from center */
-html:not(.dark) #bg-effects::before {
-  content: '';
+.dark #furina-bg {
+  background-image: url('/images/my-furina.jpg');
+  opacity: 1;
+}
+
+/* Dark overlay over Furina background for readability */
+#furina-overlay {
   position: fixed;
-  inset: -200px;
-  z-index: 0;
+  inset: 0;
+  z-index: -1;
   pointer-events: none;
-  background:
-    radial-gradient(circle 500px at 50% 45%, transparent 450px, hsl(190 50% 82% / 0.04) 450px, transparent 480px),
-    radial-gradient(circle 380px at 50% 45%, transparent 340px, hsl(195 45% 84% / 0.05) 340px, transparent 365px),
-    radial-gradient(circle 280px at 50% 45%, transparent 250px, hsl(190 50% 82% / 0.06) 250px, transparent 270px),
-    radial-gradient(circle 180px at 50% 45%, transparent 155px, hsl(195 50% 85% / 0.07) 155px, transparent 170px),
-    radial-gradient(circle 80px at 50% 45%, hsl(190 55% 88% / 0.06) 0%, transparent 100%);
-  animation: ripple-grow 6s ease-in-out infinite;
+  background: hsl(0 0% 100% / 0.3);
 }
 
-@keyframes ripple-grow {
-  0% { transform: scale(0.92); opacity: 0.6; }
-  50% { transform: scale(1.04); opacity: 1; }
-  100% { transform: scale(0.92); opacity: 0.6; }
+/* ===== Old ripple background disabled ===== */
+#furina-water-bg {
+  display: none;
 }
 
-/* Secondary gentle pulse at different speed */
-html:not(.dark) #bg-effects::after {
-  content: '';
-  position: fixed;
-  inset: -200px;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle 300px at 50% 45%, transparent 260px, hsl(185 45% 80% / 0.04) 260px, transparent 285px),
-    radial-gradient(circle 150px at 50% 45%, transparent 125px, hsl(200 45% 85% / 0.05) 125px, transparent 140px);
-  animation: ripple-pulse 9s ease-in-out infinite;
+/* Animated ripple rings */
+.furina-ripple {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid;
+  opacity: 0;
+  animation: ripple-expand 8s ease-out infinite;
 }
 
-@keyframes ripple-pulse {
-  0% { transform: scale(0.95); opacity: 0.5; }
-  50% { transform: scale(1.06); opacity: 0.8; }
-  100% { transform: scale(0.95); opacity: 0.5; }
-}
-    repeating-linear-gradient(
-      95deg,
-      transparent 0px,
-      transparent 50px,
-      hsl(190 60% 80% / 0.12) 50px,
-      transparent 54px,
-      transparent 120px,
-      hsl(195 50% 78% / 0.08) 120px,
-      transparent 125px
-    ),
-    repeating-linear-gradient(
-      175deg,
-      transparent 0px,
-      transparent 80px,
-      hsl(185 55% 82% / 0.1) 80px,
-      transparent 84px,
-      transparent 160px,
-      hsl(200 45% 80% / 0.07) 160px,
-      transparent 165px
-    ),
-    /* Vertical wave shimmer */
-    repeating-linear-gradient(
-      185deg,
-      transparent 0px,
-      transparent 100px,
-      hsl(195 50% 85% / 0.08) 100px,
-      transparent 104px,
-      transparent 200px
-    );
-  animation: water-drift 20s linear infinite;
+.furina-ripple:nth-child(1) {
+  width: 30vw;
+  height: 30vw;
+  top: 10%;
+  left: -5%;
+  border-color: hsl(210 55% 55% / 0.08);
+  animation-delay: 0s;
+  animation-duration: 10s;
 }
 
-@keyframes water-drift {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  33% { transform: translate(15px, -10px) rotate(0.5deg); }
-  66% { transform: translate(-10px, 8px) rotate(-0.3deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
+.furina-ripple:nth-child(2) {
+  width: 45vw;
+  height: 45vw;
+  bottom: -10%;
+  right: -10%;
+  border-color: hsl(195 50% 55% / 0.06);
+  animation-delay: -3s;
+  animation-duration: 12s;
+}
+
+.furina-ripple:nth-child(3) {
+  width: 20vw;
+  height: 20vw;
+  top: 40%;
+  right: 20%;
+  border-color: hsl(42 65% 55% / 0.04);
+  animation-delay: -6s;
+  animation-duration: 9s;
+}
+
+.furina-ripple:nth-child(4) {
+  width: 55vw;
+  height: 55vw;
+  top: -20%;
+  right: -20%;
+  border-color: hsl(220 50% 45% / 0.04);
+  animation-delay: -2s;
+  animation-duration: 15s;
+}
+
+@keyframes ripple-expand {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
 }
 
 /* ===== Card Depth ===== */
-/* Post preview cards - enhance with depth */
 .post-preview-item {
   transition: all 0.25s ease;
   border-radius: calc(var(--radius) * 1.5);
@@ -118,7 +124,7 @@ html:not(.dark) #bg-effects::after {
   background: hsl(var(--card) / 0.5);
   box-shadow:
     0 1px 3px hsl(var(--border) / 0.2),
-    0 4px 16px hsl(235 30% 5% / 0.5);
+    0 4px 16px hsl(220 30% 3% / 0.5);
 }
 
 /* Generic card enhancement in content areas */
@@ -151,26 +157,22 @@ html:not(.dark) #bg-effects::after {
   );
 }
 
-/* Decorative dot on section divider */
+/* Decorative diamond on section divider — Furina's diamond motif */
 .section-divider::before {
-  content: '';
+  content: '◇';
   position: absolute;
-  bottom: -4px;
+  bottom: -8px;
   left: 50%;
   transform: translateX(-50%);
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: hsl(var(--primary) / 0.25);
+  font-size: 10px;
+  color: hsl(var(--accent) / 0.3);
   z-index: 1;
   transition: all 0.3s ease;
 }
 
 .section-divider:hover::before {
-  width: 12px;
-  height: 12px;
-  bottom: -6px;
-  background: hsl(var(--primary) / 0.4);
+  color: hsl(var(--accent) / 0.5);
+  font-size: 12px;
 }
 
 /* ===== Section container card style ===== */
@@ -189,8 +191,8 @@ html:not(.dark) #bg-effects::after {
   background: hsl(var(--card) / 0.5);
   border-color: hsl(var(--border) / 0.25);
   box-shadow:
-    0 1px 3px hsl(235 30% 5% / 0.3),
-    0 4px 12px hsl(235 30% 5% / 0.15);
+    0 1px 3px hsl(220 30% 3% / 0.3),
+    0 4px 12px hsl(220 30% 3% / 0.15);
 }
 
 .content-section:hover {
@@ -204,11 +206,11 @@ html:not(.dark) #bg-effects::after {
 .dark .content-section:hover {
   border-color: hsl(var(--primary) / 0.3);
   box-shadow:
-    0 2px 4px hsl(235 30% 5% / 0.3),
-    0 8px 24px hsl(235 30% 5% / 0.2);
+    0 2px 4px hsl(220 30% 3% / 0.3),
+    0 8px 24px hsl(220 30% 3% / 0.2);
 }
 
-/* ===== Section spacing with dividers ===== */
+/* ===== Section spacing with separators ===== */
 #content > * + * {
   position: relative;
   margin-top: 2rem;
@@ -275,40 +277,50 @@ li:hover .post-item-bullet {
   transform: scale(1.3);
 }
 
-/* Theme - 浅蓝色系 */
+/* ===== Pneuma (Light) — Furina's Elegant Form ===== */
 :root {
-  /* Primary */
-  --primary: 200 80% 55%;
-  /* Foreground */
-  --foreground: 215 25% 15%;
-  --muted-foreground: 215 20% 45%;
-  /* Background */
-  --background: 205 40% 98%;
-  --muted: 210 35% 94%;
-  --card: 210 30% 96%;
+  /* Primary — ocean blue (Furina's hydro vision) */
+  --primary: 210 45% 48%;
+  /* Accent — gold (Furina's ornaments) */
+  --accent: 42 65% 50%;
+  /* Foreground — deep navy */
+  --foreground: 220 20% 15%;
+  --muted-foreground: 220 12% 42%;
+  /* Background — warm off-white (theater curtain light) */
+  --background: 40 10% 96%;
+  --muted: 42 6% 90%;
+  --card: 40 8% 93%;
 
   /* Basic */
-  --border: 210 25% 88%;
-  --input: 210 25% 90%;
-  --ring: 200 80% 55%;
+  --border: 42 6% 82%;
+  --input: 42 4% 86%;
+  --ring: 210 45% 48%;
   --radius: 0.5rem;
+
+  /* Destructive — kept for wikilink broken state */
+  --destructive: 0 72% 51%;
 }
 
+/* ===== Ousia (Dark) — Furina's Oceanic Depths ===== */
 .dark {
-  /* Primary - stellar blue glow */
-  --primary: 210 85% 68%;
-  /* Foreground - warm starlight */
-  --foreground: 45 12% 94%;
-  --muted-foreground: 220 15% 58%;
-  /* Background - deep night sky */
-  --background: 235 35% 4%;
-  --muted: 235 28% 10%;
-  --card: 235 22% 15%;
+  /* Primary — cyan/blue glow (hydro in darkness) */
+  --primary: 195 55% 50%;
+  /* Accent — golden glow */
+  --accent: 42 70% 55%;
+  /* Foreground — warm cream */
+  --foreground: 40 15% 90%;
+  --muted-foreground: 220 10% 55%;
+  /* Background — deep ocean */
+  --background: 220 30% 6%;
+  --muted: 220 20% 11%;
+  --card: 220 18% 9%;
 
   /* Basic */
-  --border: 235 18% 19%;
-  --input: 235 18% 16%;
-  --ring: 210 85% 68%;
+  --border: 220 12% 18%;
+  --input: 220 10% 14%;
+  --ring: 195 55% 50%;
+
+  --destructive: 0 62% 55%;
 }
 
 :root {
@@ -326,4 +338,96 @@ a {
   &:hover {
     color: hsl(var(--primary) / var(--un-text-opacity, 1));
   }
+}
+
+/* ===== Furina Theme Additions ===== */
+
+/* Typography refinements */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: hsl(var(--accent) / 0.2);
+  color: hsl(var(--foreground));
+}
+
+/* Card hover transition */
+.featured-card,
+.post-card,
+.blog-card,
+.content-section {
+  transition:
+    transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+/* Refined focus ring */
+:focus-visible {
+  outline: 2px solid hsl(var(--ring) / 0.5);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Subtle link underlines in article content */
+#content p > a,
+#content li > a {
+  text-decoration: none;
+  border-bottom: 1px solid hsl(var(--primary) / 0.25);
+  transition: border-color 0.2s ease;
+}
+
+#content p > a:hover,
+#content li > a:hover {
+  border-bottom-color: hsl(var(--primary) / 0.6);
+}
+
+/* Icons with hover effect */
+.magazine-icon {
+  transition: transform 0.2s ease;
+}
+
+.magazine-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Blog post hero */
+.hero-section {
+  position: relative;
+}
+
+.hero-section::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(var(--primary) / 0.15) 50%,
+    transparent 100%
+  );
+}
+
+/* Pagination style refinements */
+.pagination a,
+.pagination span {
+  transition: all 0.2s ease;
+}
+
+/* Gold accent utility */
+.furina-gold {
+  color: hsl(var(--accent));
+}
+
+.furina-gold-border {
+  border-color: hsl(var(--accent) / 0.3);
+}
+
+.furina-gold-bg {
+  background: hsl(var(--accent) / 0.1);
 }

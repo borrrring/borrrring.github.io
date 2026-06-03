@@ -3,11 +3,11 @@ import type { CardListData, Config, IntegrationUserConfig, ThemeUserConfig } fro
 export const theme: ThemeUserConfig = {
   // [Basic]
   /** Title for your website. Will be used in metadata and as browser tab title. */
-  title: '苹果不会想橘子的问题',
+  title: "Furina's Tea Party",
   /** Will be used in index page & copyright declaration */
   author: 'borrrring',
   /** Description metadata for your website. Can be used in page metadata. */
-  description: '我无限地爱着新的一日',
+  description: '旧的土壤仍能开出新的繁花',
   /** The default favicon for your site which should be a path to an image in the `public/` directory. */
   favicon: '/favicon/favicon.gif',
   /** The default social card image for your site which should be a path to an image in the `public/` directory. */
@@ -26,7 +26,7 @@ export const theme: ThemeUserConfig = {
   },
   /** Set a logo image to show in the homepage. */
   logo: {
-    src: '/src/assets/avatar.png',
+    src: '/src/assets/avatar.jpg',
     alt: 'Avatar'
   },
 
@@ -50,7 +50,6 @@ export const theme: ThemeUserConfig = {
     menu: [
       { title: '文章', link: '/blog' },
       { title: '标签', link: '/tags' },
-      { title: '时光机', link: '/archives' },
       { title: '项目', link: '/projects' },
       { title: '文档', link: '/docs' },
       { title: '链接', link: '/links' },

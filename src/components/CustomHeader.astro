@@ -30,7 +30,7 @@ const logoImage = logoImageModule ? await logoImageModule() : null
           id='header-avatar'
           src={logoImage.default}
           alt={config.logo.alt || 'Logo'}
-          class='h-8 w-8 rounded-full border border-foreground/20 transition-transform duration-600'
+          class='h-8 w-8 rounded-full border border-[#d4a84b]/30 transition-transform duration-600'
           style='object-fit: cover;'
           loading='eager'
           fetchpriority='high'
@@ -65,17 +65,8 @@ const logoImage = logoImageModule ? await logoImageModule() : null
     <div class='z-30 flex gap-x-4 group-[.not-top]:gap-x-2' style='transition:gap 0.3s'>
       <Search />
       <button
-        id='toggleDarkMode'
-        class='group/dark box-content size-5 rounded-md border p-1.5 transition-colors hover:bg-border sm:group-[.not-top]:rounded-xl'
-      >
-        <span class='sr-only'>Dark Theme</span>
-        <Icon class='system size-5 group-hover/dark:text-primary' name='computer' />
-        <Icon class='light hidden size-5 group-hover/dark:text-primary' name='sun' />
-        <Icon class='dark hidden size-5 group-hover/dark:text-primary' name='moon' />
-      </button>
-      <button
         id='toggleMenu'
-        class='rounded-md border p-1.5 transition-colors hover:bg-border sm:hidden sm:group-[.not-top]:rounded-xl'
+        class='rounded-md border p-1.5 transition-colors hover:bg-[var(--primary)]/10 sm:hidden sm:group-[.not-top]:rounded-xl'
       >
         <span class='sr-only'>Menu</span>
         <Icon class='size-5' name='menu' />
@@ -84,15 +75,8 @@ const logoImage = logoImageModule ? await logoImageModule() : null
   </div>
 </header-component>
 
-{/* Use inline to load icon quicker firstly */}
-<script is:inline>
-  const toggleDarkModeElement = document.getElementById('toggleDarkMode')
-  if (toggleDarkModeElement) {
-    toggleDarkModeElement.dataset.theme = localStorage.getItem('theme') || 'system'
-  }
-</script>
 <script>
-  import { setTheme, showToast } from 'astro-pure/utils'
+  import { showToast } from 'astro-pure/utils'
 
   class HeaderComponent extends HTMLElement {
     connectedCallback() {
@@ -103,14 +87,6 @@ const logoImage = logoImageModule ? await logoImageModule() : null
         this.classList.toggle('not-top', window.scrollY > 20)
         this.dataset.show = (window.scrollY < 350 || window.scrollY < preScrollY).toString()
         preScrollY = window.scrollY
-      })
-
-      // Dark Mode
-      const darkModeBtn = this.querySelector('#toggleDarkMode') as HTMLElement
-      darkModeBtn.addEventListener('click', () => {
-        const newTheme = setTheme(undefined, true)
-        darkModeBtn.dataset.theme = newTheme
-        showToast({ message: `Set theme to ${newTheme}` })
       })
 
       // Menu
@@ -160,9 +136,9 @@ const logoImage = logoImageModule ? await logoImageModule() : null
       padding-right: 0.375rem;
       box-shadow:
         rgb(255, 255, 255) 0px 0px 0px 0px,
-        rgba(24, 24, 27, 0.08) 0px 0px 0px 1px,
-        rgba(39, 39, 42, 0.08) 0px 10px 15px -3px,
-        rgba(39, 39, 42, 0.08) 0px 4px 6px -4px;
+        rgba(74, 139, 194, 0.08) 0px 0px 0px 1px,
+        rgba(15, 31, 61, 0.08) 0px 10px 15px -3px,
+        rgba(15, 31, 61, 0.08) 0px 4px 6px -4px;
     }
     &[data-show='false']:not(.expanded) {
       transform: translateY(-5rem);
@@ -193,9 +169,9 @@ const logoImage = logoImageModule ? await logoImageModule() : null
     .expanded.not-top #headerExpandContent {
       box-shadow:
         rgb(255, 255, 255) 0px 0px 0px 0px,
-        rgba(24, 24, 27, 0.08) 0px 0px 0px 1px,
-        rgba(39, 39, 42, 0.08) 0px 10px 15px -3px,
-        rgba(39, 39, 42, 0.08) 0px 4px 6px -4px;
+        rgba(74, 139, 194, 0.08) 0px 0px 0px 1px,
+        rgba(15, 31, 61, 0.08) 0px 10px 15px -3px,
+        rgba(15, 31, 61, 0.08) 0px 4px 6px -4px;
     }
 
     /* header component after */
@@ -221,23 +197,4 @@ const logoImage = logoImageModule ? await logoImageModule() : null
     }
   }
 
-  /* dark light mode toggle */
-  #toggleDarkMode {
-    &[data-theme='dark'] {
-      & .system {
-        display: none;
-      }
-      & .dark {
-        display: block;
-      }
-    }
-    &[data-theme='light'] {
-      & .system {
-        display: none;
-      }
-      .light {
-        display: block;
-      }
-    }
-  }
 </style>

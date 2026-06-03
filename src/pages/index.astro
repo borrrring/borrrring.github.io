@@ -5,46 +5,12 @@ import { Image } from 'astro:assets'
 import { Quote } from 'astro-pure/advanced'
 import { PostPreview } from 'astro-pure/components/pages'
 import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
-import { Button, Card, Icon } from 'astro-pure/user'
+import { Button, Icon } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
 import Section from '@/components/home/Section.astro'
 import config from '@/site-config'
 
 const MAX_POSTS = 10
-
-// Generate star field data for galaxy effect
-const starConfig = {
-  count: 200,
-  bandCount: 100, // stars concentrated in the milky way band
-}
-const stars = Array.from({ length: starConfig.count }, (_, i) => ({
-  id: i,
-  x: Math.random() * 100,
-  y: Math.random() * 100,
-  size: Math.random() * 2.5 + 0.5,
-  duration: Math.random() * 3 + 2,
-  delay: Math.random() * 5,
-  opacity: Math.random() * 0.4 + 0.5,
-}))
-// Stars concentrated along a diagonal band (milky way)
-const bandStars = Array.from({ length: starConfig.bandCount }, (_, i) => {
-  const t = Math.random()
-  const spread = 22 // band width
-  const centerX = 20 + t * 50
-  const centerY = 15 + t * 55
-  const offsetX = (Math.random() - 0.5) * spread
-  const offsetY = (Math.random() - 0.5) * spread * 0.6
-  return {
-    id: `b${i}`,
-    x: centerX + offsetX,
-    y: centerY + offsetY,
-    size: Math.random() * 4 + 1.5,
-    duration: Math.random() * 4 + 3,
-    delay: Math.random() * 6,
-    opacity: Math.random() * 0.5 + 0.5,
-    hue: 200 + Math.random() * 40,
-  }
-})
 
 const allPosts = await getBlogCollection()
 const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
@@ -59,530 +25,355 @@ if (!images[imagePath])
   )
 ---
 
-<PageLayout meta={{ title: 'Home' }} highlightColor='#7EC8E3'>
-  <main class='flex w-full flex-col items-center relative -mt-16' data-page='home'>
-    {/* Profile Section - Full Screen Hero */}
-    <section
-      class='flex min-h-[calc(100vh-4rem)] w-full flex-col items-center justify-center relative overflow-hidden page-transition-enter'
-      id='profile-hero'
-    >
-      {/* Galaxy / Milky Way effect - dark mode only */}
-      <div class='galaxy-band'>
-        <div class='nebula-glow-1'></div>
-        <div class='nebula-glow-2'></div>
-        <div class='nebula-glow-3'></div>
-        {bandStars.map((s) => (
-          <div
-            class='band-star'
-            style={`left:${s.x}%;top:${s.y}%;width:${s.size}px;height:${s.size}px;
-              --dur:${s.duration}s;--delay:${s.delay}s;--star-op:${s.opacity};
-              box-shadow:0 0 ${s.size * 2}px ${s.size * 0.5}px hsla(${s.hue},70%,70%,0.3)`}
-          />
-        ))}
-        {stars.map((s) => (
-          <div
-            class='scattered-star'
-            style={`left:${s.x}%;top:${s.y}%;width:${s.size}px;height:${s.size}px;
-              --dur:${s.duration}s;--delay:${s.delay}s;--star-op:${s.opacity}`}
-          />
-        ))}
-      </div>
+<PageLayout meta={{ title: 'Home' }} highlightColor='#4A8BC2'>
+  <main class='flex w-full flex-col'>
+    {/* ===== Furina Masthead ===== */}
+    <section class='masthead relative flex min-h-[75vh] w-full flex-col items-center justify-center overflow-hidden'>
+      {/* Ocean depth gradient */}
+      <div class='absolute inset-0 bg-gradient-to-b from-[#0a1628] via-[#0f1f3d] to-[#1a3055] pointer-events-none'></div>
+      {/* Subtle radial glow */}
+      <div class='furina-glow absolute top-1/4 left-1/2 -translate-x-1/2 w-[60vw] h-[40vh] pointer-events-none'></div>
 
-      <div class='relative z-10 flex flex-col items-center gap-y-5 max-w-2xl mx-auto px-4'>
-        {/* Avatar */}
-        <div class='relative group'>
-          <div
-            class='absolute inset-0 rounded-full bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 blur-xl group-hover:blur-2xl transition-all duration-500'
-          >
-          </div>
-          <div class='relative'>
-            <Image
-              id='home-avatar'
-              src={images[imagePath]()}
-              alt={config.logo.alt || 'Profile'}
-              class='rounded-full border-4 border-foreground/10 shadow-2xl transition-transform duration-500 group-hover:scale-105'
-              style='width: 120px; height: 120px; object-fit: cover;'
-              loading='eager'
-              fetchpriority='high'
-            />
-          </div>
+      <div class='relative z-10 flex flex-col items-center px-4 max-w-3xl mx-auto text-center'>
+        <!-- Avatar with animated golden halo -->
+        <div class='mb-10 relative'>
+          <div class='avatar-halo absolute inset-0 rounded-full bg-[#d4a84b]/15 blur-xl scale-150'></div>
+          <Image
+            src={images[imagePath]()}
+            alt={config.logo.alt || 'Profile'}
+            class='avatar-img rounded-full border-2 border-[#d4a84b]/30 shadow-2xl relative'
+            style='width: 88px; height: 88px; object-fit: cover;'
+            loading='eager'
+            fetchpriority='high'
+          />
         </div>
 
-        {/* Title */}
-        <h1 class='text-4xl sm:text-5xl font-bold text-center tracking-tight'>
+        <!-- Publication title — Furina's Tea Party in elegant French script -->
+        <h1 class='masthead-title' style="font-family: 'Parisienne', cursive; font-size: 3.5rem; line-height: 1.2; color: #d4a84b; text-shadow: 0 2px 12px rgba(0,0,0,0.5);">
           {config.title}
         </h1>
+        <style>
+          @media (min-width: 640px) {
+            .masthead-title { font-size: 5rem !important; }
+          }
+        </style>
 
-        {/* Description */}
-        <p
-          class='text-lg sm:text-xl text-muted-foreground font-light text-center max-w-lg leading-relaxed'
-        >
+        <!-- Decorative divider -->
+        <div class='flex items-center gap-3 mt-2 mb-4'>
+          <span class='block w-12 h-px bg-gradient-to-r from-transparent to-[#d4a84b]'></span>
+          <span class='text-[#d4a84b] text-lg drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)]'>◇</span>
+          <span class='block w-12 h-px bg-gradient-to-l from-transparent to-[#d4a84b]'></span>
+        </div>
+
+        <!-- Tagline / description -->
+        <p class='text-lg sm:text-xl text-[#4A8BC2] font-semibold max-w-lg leading-relaxed drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)]'>
           {config.description}
         </p>
 
-        {/* Navigation Buttons */}
-        <div class='flex flex-wrap justify-center gap-3 mt-1'>
-          <a
-            href='/blog'
-            class='home-nav-btn group relative px-6 py-2.5 text-sm font-medium rounded-full bg-background/60 backdrop-blur-sm border border-foreground/10 text-foreground/80 hover:text-foreground hover:bg-background/80 hover:border-foreground/20 transition-all duration-300 hover:scale-105 hover:shadow-md'
-          >
-            <span class='relative z-10'>文章</span>
-            <div
-              class='absolute inset-0 rounded-full bg-gradient-to-r from-blue-400/0 via-blue-300/0 to-blue-400/0 group-hover:from-blue-400/10 group-hover:via-blue-300/10 group-hover:to-blue-400/10 transition-all duration-300 opacity-0 group-hover:opacity-100'
-            >
-            </div>
-          </a>
-          <a
-            href='/tags'
-            class='home-nav-btn group relative px-6 py-2.5 text-sm font-medium rounded-full bg-background/60 backdrop-blur-sm border border-foreground/10 text-foreground/80 hover:text-foreground hover:bg-background/80 hover:border-foreground/20 transition-all duration-300 hover:scale-105 hover:shadow-md'
-          >
-            <span class='relative z-10'>标签</span>
-            <div
-              class='absolute inset-0 rounded-full bg-gradient-to-r from-blue-400/0 via-blue-300/0 to-blue-400/0 group-hover:from-blue-400/10 group-hover:via-blue-300/10 group-hover:to-blue-400/10 transition-all duration-300 opacity-0 group-hover:opacity-100'
-            >
-            </div>
-          </a>
-          <a
-            href='/about'
-            class='home-nav-btn group relative px-6 py-2.5 text-sm font-medium rounded-full bg-background/60 backdrop-blur-sm border border-foreground/10 text-foreground/80 hover:text-foreground hover:bg-background/80 hover:border-foreground/20 transition-all duration-300 hover:scale-105 hover:shadow-md'
-          >
-            <span class='relative z-10'>关于</span>
-            <div
-              class='absolute inset-0 rounded-full bg-gradient-to-r from-blue-400/0 via-blue-300/0 to-blue-400/0 group-hover:from-blue-400/10 group-hover:via-blue-300/10 group-hover:to-blue-400/10 transition-all duration-300 opacity-0 group-hover:opacity-100'
-            >
-            </div>
-          </a>
-        </div>
+        <!-- Navigation — gold accent buttons -->
+        <nav class='mt-8 flex flex-wrap justify-center gap-2 sm:gap-3'>
+          {['文章', '标签', '关于'].map((label, i) => {
+            const links = ['/blog', '/tags', '/about']
+            return (
+              <a
+                href={links[i]}
+                class='masthead-btn relative px-5 py-2 text-sm font-medium rounded-full border border-[#d4a84b]/30 text-[#d4a84b]/80 hover:text-white hover:bg-[#d4a84b]/20 hover:border-[#d4a84b]/60 transition-all duration-300 hover:scale-105'
+              >
+                {label}
+              </a>
+            )
+          })}
+        </nav>
 
-        {/* Social Icons */}
-        <div class='flex items-center justify-center gap-x-4 mt-3'>
+        <!-- Social — light icons on dark bg -->
+        <div class='mt-6 flex items-center gap-x-4'>
           <a
             href='https://github.com/borrrring'
             target='_blank'
             rel='noopener noreferrer'
-            class='group relative p-2.5 rounded-full bg-muted/50 hover:bg-muted transition-all duration-300 hover:scale-110'
+            class='p-2 rounded-full text-[#4A8BC2] hover:text-[#d4a84b] transition-colors duration-300'
             aria-label='GitHub'
           >
-            <Icon
-              name='github'
-              class='size-5 text-muted-foreground group-hover:text-foreground transition-colors duration-300'
-            />
+            <Icon name='github' class='size-5' />
+          </a>
+          <a href='/rss.xml' class='p-2 rounded-full text-[#4A8BC2] hover:text-[#d4a84b] transition-colors duration-300' aria-label='RSS'>
+            <Icon name='rss' class='size-5' />
           </a>
         </div>
       </div>
 
-      {/* Scroll indicator at bottom */}
-      <a
-        href='#content'
-        class='scroll-indicator-circle absolute bottom-20 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full border-2 bg-background/80 backdrop-blur-sm flex items-center justify-center cursor-pointer group transition-all duration-300 hover:scale-110 shadow-lg z-20'
-        aria-label='向下滚动'
-        style='border-width: 0; border-color: transparent;'
-      >
-        <svg
-          width='20'
-          height='20'
-          viewBox='0 0 24 24'
-          fill='none'
-          stroke='currentColor'
-          stroke-width='2.5'
-          stroke-linecap='round'
-          stroke-linejoin='round'
-          class='text-muted-foreground/70 group-hover:text-foreground transition-colors duration-300'
-        >
-          <path d='M6 9l6 6 6-6'></path>
-        </svg>
-      </a>
+      {/* Bottom fade */}
+      <div class='absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[var(--background)] to-transparent pointer-events-none'></div>
     </section>
 
-    {/* Content Section - Scroll to view */}
-    <div id='content' class='animate flex w-full flex-col gap-y-8 md:w-4/5 lg:w-5/6 pt-8 pb-4'>
-      <div class='content-section'>
-        <Section title='About'>
-          <p class='text-muted-foreground'>我无限地爱着新的一日</p>
-        </Section>
-      </div>
+    {/* ===== Content Grid ===== */}
+    <div class='magazine-content mx-auto w-full max-w-6xl px-4 sm:px-6 pb-16'>
       {
         allPostsByDate.length > 0 && (
-          <div class='content-section'>
-            <Section title='Posts'>
-              <ul class='flex flex-col gap-y-1.5 sm:gap-y-2'>
-                {allPostsByDate.map((p) => (
-                  <li class='flex flex-col gap-x-2 sm:flex-row'>
-                    <PostPreview post={p} />
-                  </li>
-                ))}
-              </ul>
-              <Button title='More posts' class='w-fit self-end' href='/blog' variant='ahead' />
-            </Section>
-          </div>
+          <>
+            {/* Section header with gold accent */}
+            <div class='section-header flex items-center justify-between mb-8'>
+              <div class='flex items-center gap-3'>
+                <span class='text-[#d4a84b] text-lg'>◇</span>
+                <h2 class='font-heading text-lg font-[500] tracking-wide text-[var(--foreground)]'>
+                  最新文章
+                </h2>
+              </div>
+              <span class='h-px flex-1 bg-gradient-to-r from-[var(--border)] to-transparent mx-4'></span>
+              <a href='/blog' class='text-sm text-[var(--muted-foreground)]/60 hover:text-[var(--accent)] transition-colors text-nowrap'>
+                View all →
+              </a>
+            </div>
+
+            {/* Featured post — large card with water-blue accent */}
+            <article class='featured-card group relative mb-10 overflow-hidden rounded-2xl border border-[var(--primary)]/20 bg-[var(--card)]/40 hover:bg-[var(--card)]/60 transition-all duration-500'>
+              <a href={`/blog/${allPostsByDate[0].id}`} class='block p-6 sm:p-8 md:p-10' data-astro-prefetch>
+                <div class='flex flex-col md:flex-row md:items-start md:justify-between gap-6'>
+                  <div class='flex-1 min-w-0'>
+                    <div class='flex items-center gap-3 text-xs text-[var(--muted-foreground)]/60 mb-3'>
+                      <time datetime={allPostsByDate[0].data.publishDate?.toISOString()}>
+                        {allPostsByDate[0].data.publishDate?.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      </time>
+                      <span class='w-1 h-1 rounded-full bg-[var(--border)]'></span>
+                      <span class='featured-badge text-[var(--primary)] font-medium'>Featured</span>
+                    </div>
+                    <h2 class='font-heading text-2xl sm:text-3xl font-[500] leading-snug mb-3 group-hover:text-[var(--primary)] transition-colors'>
+                      {allPostsByDate[0].data.title}
+                    </h2>
+                    {allPostsByDate[0].data.description && (
+                      <p class='text-[var(--muted-foreground)]/70 text-sm sm:text-base leading-relaxed line-clamp-3'>
+                        {allPostsByDate[0].data.description}
+                      </p>
+                    )}
+                    <div class='flex flex-wrap gap-2 mt-4'>
+                      {allPostsByDate[0].data.tags?.map((tag: string) => (
+                        <span class='text-xs px-3 py-1 rounded-full bg-[var(--muted)]/60 text-[var(--muted-foreground)]/60'>
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div class='featured-arrow shrink-0 self-end md:self-center text-[var(--muted-foreground)]/20 group-hover:text-[var(--primary)]/60 transition-all duration-500 group-hover:translate-x-1'>
+                    <svg width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'>
+                      <line x1='5' y1='12' x2='19' y2='12'></line>
+                      <polyline points='12 5 19 12 12 19'></polyline>
+                    </svg>
+                  </div>
+                </div>
+              </a>
+            </article>
+
+            {/* Post grid */}
+            <div class='post-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6'>
+              {allPostsByDate.slice(1).map((post) => (
+                <article class='post-card group relative rounded-xl border border-[var(--primary)]/15 bg-[var(--card)]/20 hover:bg-[var(--card)]/40 transition-all duration-400'>
+                  <a href={`/blog/${post.id}`} class='block p-5 sm:p-6' data-astro-prefetch>
+                    <div class='flex items-center gap-2 text-[11px] text-[var(--muted-foreground)]/50 mb-3'>
+                      <time datetime={post.data.publishDate?.toISOString()}>
+                        {post.data.publishDate?.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </time>
+                    </div>
+
+                    <h3 class='font-heading text-base sm:text-lg font-[500] leading-snug mb-2 group-hover:text-[var(--primary)] transition-colors'>
+                      {post.data.title}
+                    </h3>
+
+                    {post.data.description && (
+                      <p class='text-sm text-[var(--muted-foreground)]/60 leading-relaxed line-clamp-2'>
+                        {post.data.description}
+                      </p>
+                    )}
+
+                    <div class='flex items-center justify-between mt-4 pt-3 border-t border-[var(--border)]/20'>
+                      <div class='flex flex-wrap gap-1.5'>
+                        {post.data.tags?.slice(0, 2).map((tag: string) => (
+                          <span class='text-[10px] px-2 py-0.5 rounded-full bg-[var(--muted)]/40 text-[var(--muted-foreground)]/50'>
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <span class='text-xs text-[var(--muted-foreground)]/30 group-hover:text-[var(--primary)]/50 transition-colors'>
+                        Read →
+                      </span>
+                    </div>
+                  </a>
+                </article>
+              ))}
+            </div>
+          </>
         )
       }
 
+      {/* About section */}
+      <div class='mt-20'>
+        <div class='section-header flex items-center mb-8'>
+          <div class='flex items-center gap-3'>
+            <span class='text-[#d4a84b] text-lg'>◇</span>
+            <h2 class='font-heading text-lg font-[500] tracking-wide text-[var(--foreground)]'>
+              关于
+            </h2>
+          </div>
+          <span class='h-px flex-1 bg-gradient-to-r from-[var(--border)] to-transparent mx-4'></span>
+        </div>
+        <div class='about-card rounded-xl border border-[var(--primary)]/20 bg-[var(--card)]/30 p-6 sm:p-8'>
+          <p class='text-[var(--muted-foreground)]/70 leading-relaxed'>
+            我无限地爱着新的一日
+          </p>
+          <a href='/about' class='inline-flex items-center gap-1 mt-4 text-sm text-[var(--muted-foreground)]/50 hover:text-[var(--accent)] transition-colors'>
+            More about me →
+          </a>
+        </div>
+      </div>
+
+      {/* Quote */}
+      <Quote class='mt-16' />
     </div>
-    <Quote class='mt-12 mb-12' />
   </main>
 </PageLayout>
 
 <style>
-  /* Page transition animations */
-  @keyframes pageFadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  /* Masthead */
+  .masthead {
+    min-height: 60vh;
   }
 
-  @keyframes pageSlideIn {
-    from {
-      opacity: 0;
-      transform: translateX(-30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+  .masthead-title {
+    letter-spacing: -0.03em;
   }
 
-  @keyframes heroFadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .masthead-btn {
+    backdrop-filter: blur(4px);
   }
 
-  /* Navigation buttons animation */
-  .home-nav-btn {
-    animation: navBtnFadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-    animation-delay: 0.2s;
-    opacity: 0;
+  .furina-glow {
+    background: radial-gradient(ellipse at center, rgba(74, 139, 194, 0.10) 0%, transparent 70%);
   }
 
-  @keyframes navBtnFadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  /* Animated avatar halo */
+  @keyframes haloPulse {
+    0%, 100% { opacity: 0.6; transform: scale(1.4); }
+    50% { opacity: 1; transform: scale(1.6); }
+  }
+  .avatar-halo {
+    animation: haloPulse 3s ease-in-out infinite;
+  }
+  @keyframes avatarGlow {
+    0%, 100% { border-color: rgba(212, 168, 75, 0.3); box-shadow: 0 0 15px rgba(212, 168, 75, 0.15); }
+    50% { border-color: rgba(212, 168, 75, 0.6); box-shadow: 0 0 25px rgba(212, 168, 75, 0.3); }
+  }
+  .avatar-img {
+    animation: avatarGlow 3s ease-in-out infinite;
   }
 
-  /* Homepage entry animation - optimized for performance */
-  /* Only animate the hero section, not the entire main */
-  .page-transition-enter {
-    animation: heroFadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-  }
-
-  /* Smooth scroll behavior */
-  @media (prefers-reduced-motion: no-preference) {
-    html {
-      scroll-behavior: smooth;
-    }
-  }
-
-  #profile-hero {
+  /* Featured card */
+  .featured-card {
     position: relative;
-    padding-top: 0;
-    margin-top: 0;
   }
 
-  #content {
-    scroll-margin-top: 2rem;
-    opacity: 0;
-    animation: fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s forwards;
-  }
-
-  /* Smooth scroll behavior */
-  html {
-    scroll-behavior: smooth;
-  }
-
-  /* Enhanced scroll indicator circle - optimized */
-  .scroll-indicator-circle {
-    animation: scrollBounce 2s infinite;
-    border: 2px solid hsl(var(--background) / 0.8);
-    opacity: 0;
-    animation:
-      scrollBounce 2s infinite,
-      scrollFadeIn 0.8s 0.4s forwards;
-  }
-
-  @keyframes scrollFadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes scrollBounce {
-    0%,
-    100% {
-      transform: translate(-50%, 0);
-    }
-    50% {
-      transform: translate(-50%, 6px);
-    }
-  }
-
-  /* Pulse effect for scroll indicator circle */
-  .scroll-indicator-circle::before {
+  .featured-card::before {
     content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 2px solid hsl(var(--background) / 0.8);
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite 2s;
+    inset: 0;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.06) 0%, transparent 50%);
     pointer-events: none;
-    opacity: 0;
   }
 
-  @keyframes pulse {
-    0%,
-    100% {
-      opacity: 0.4;
-      transform: translate(-50%, -50%) scale(1);
-    }
-    50% {
-      opacity: 0;
-      transform: translate(-50%, -50%) scale(1.3);
-    }
-  }
-
-  /* Avatar glow effect */
-  #profile-hero .group:hover img {
-    box-shadow: 0 0 30px hsl(var(--primary) / 0.3);
-  }
-
-  /* Fade in animation for content */
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Smooth transition when scrolling - optimized */
-  #profile-hero {
-    transition:
-      opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-      transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-
-  /* Hide header on scroll for better experience */
-  @media (prefers-reduced-motion: no-preference) {
-    #profile-hero.scrolled {
-      opacity: 0.3;
-      transform: scale(0.95);
-    }
-  }
-
-  /* ===== Galaxy / Milky Way Effect ===== */
-  .galaxy-band {
+  .featured-card::after {
+    content: '';
     position: absolute;
-    inset: -15%;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.3), transparent);
     pointer-events: none;
-    z-index: 1;
-    opacity: 0;
-    transition: opacity 1.2s ease;
-    overflow: visible;
   }
 
-  /* Only show in dark mode via class on html */
-  :global(.dark) .galaxy-band {
+  .featured-badge {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* Post grid cards */
+  .post-card {
+    position: relative;
+  }
+
+  .post-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.03) 0%, transparent 60%);
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  .post-card:hover::before {
     opacity: 1;
   }
 
-  /* Nebula glows */
-  .nebula-glow-1,
-  .nebula-glow-2,
-  .nebula-glow-3 {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(60px);
-    mix-blend-mode: screen;
-  }
-
-  .nebula-glow-1 {
-    width: 80%;
-    height: 60%;
-    left: 10%;
-    top: 20%;
-    background: radial-gradient(ellipse, hsla(210, 80%, 70%, 0.18) 0%, transparent 70%);
-    animation: nebula-drift-1 12s ease-in-out infinite;
-  }
-
-  .nebula-glow-2 {
-    width: 60%;
-    height: 50%;
-    left: 25%;
-    top: 30%;
-    background: radial-gradient(ellipse, hsla(180, 60%, 60%, 0.12) 0%, transparent 70%);
-    animation: nebula-drift-2 15s ease-in-out infinite;
-  }
-
-  .nebula-glow-3 {
-    width: 40%;
-    height: 40%;
-    left: 35%;
-    top: 35%;
-    background: radial-gradient(ellipse, hsla(240, 70%, 75%, 0.1) 0%, transparent 70%);
-    animation: nebula-drift-1 10s ease-in-out infinite reverse;
-  }
-
-  @keyframes nebula-drift-1 {
-    0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-    33% { transform: translate(3%, -2%) scale(1.05) rotate(2deg); }
-    66% { transform: translate(-2%, 3%) scale(0.95) rotate(-1deg); }
-  }
-
-  @keyframes nebula-drift-2 {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(-3%, 2%) scale(1.08); }
-  }
-
-  /* Band stars - concentrated in a diagonal milky way */
-  .band-star {
-    position: absolute;
-    border-radius: 50%;
-    background: radial-gradient(circle, #fff 0%, hsla(210, 80%, 80%, 0.6) 40%, transparent 70%);
-    animation: star-twinkle-band var(--dur, 3s) ease-in-out var(--delay, 0s) infinite;
-  }
-
-  /* Scattered stars */
-  .scattered-star {
-    position: absolute;
-    border-radius: 50%;
-    background: radial-gradient(circle, #fff 0%, hsla(0, 0%, 80%, 0.4) 50%, transparent 70%);
-    animation: star-twinkle var(--dur, 4s) ease-in-out var(--delay, 0s) infinite;
-  }
-
-  @keyframes star-twinkle-band {
-    0%, 100% {
-      opacity: calc(var(--star-op, 0.5) * 0.5);
-      transform: scale(0.9);
+  /* Entry animation */
+  @keyframes cardFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
     }
-    50% {
-      opacity: var(--star-op, 0.5);
-      transform: scale(1.4);
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 
-  @keyframes star-twinkle {
-    0%, 100% {
-      opacity: calc(var(--star-op, 0.4) * 0.4);
-      transform: scale(0.7);
-    }
-    50% {
-      opacity: calc(var(--star-op, 0.4) * 0.9);
-      transform: scale(1.2);
+  .post-card:nth-child(1) { animation: cardFadeIn 0.4s ease both 0.1s; }
+  .post-card:nth-child(2) { animation: cardFadeIn 0.4s ease both 0.15s; }
+  .post-card:nth-child(3) { animation: cardFadeIn 0.4s ease both 0.2s; }
+  .post-card:nth-child(4) { animation: cardFadeIn 0.4s ease both 0.25s; }
+  .post-card:nth-child(5) { animation: cardFadeIn 0.4s ease both 0.3s; }
+  .post-card:nth-child(6) { animation: cardFadeIn 0.4s ease both 0.35s; }
+
+  /* Section header */
+  .section-header {
+    user-select: none;
+  }
+
+  /* About card */
+  .about-card {
+    position: relative;
+  }
+
+  /* Dark mode adjustments */
+  :global(.dark) .featured-card {
+    border-color: hsl(var(--primary) / 0.25);
+  }
+
+  :global(.dark) .post-card {
+    border-color: hsl(var(--primary) / 0.12);
+  }
+
+  /* Hover lift effect for all cards */
+  .featured-card:hover,
+  .post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px hsl(var(--primary) / 0.08);
+  }
+
+  :global(.dark) .featured-card:hover,
+  :global(.dark) .post-card:hover {
+    box-shadow: 0 8px 30px hsl(220 30% 3% / 0.5);
+  }
+
+  /* Magazine content wrapper */
+  .magazine-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (max-width: 640px) {
+    .masthead-title {
+      font-size: 2.25rem;
     }
   }
 </style>
-
-<script>
-  // Avatar rotation on link hover
-  document.addEventListener('DOMContentLoaded', () => {
-    const avatar = document.getElementById('home-avatar')
-    if (!avatar) return
-
-    // Get all links on the page (excluding the scroll indicator)
-    const links = document.querySelectorAll('a[href]:not(.scroll-indicator-circle)')
-
-    links.forEach((link) => {
-      link.addEventListener('mouseenter', () => {
-        // Remove the class first to reset animation
-        avatar.classList.remove('rotate')
-        // Force reflow to restart animation
-        void avatar.offsetWidth
-        // Add the class to trigger rotation
-        avatar.classList.add('rotate')
-      })
-
-      // Remove the class after animation completes
-      avatar.addEventListener('animationend', () => {
-        avatar.classList.remove('rotate')
-      })
-    })
-  })
-
-  // Smooth scroll behavior and scroll detection
-  document.addEventListener('DOMContentLoaded', () => {
-    const profileHero = document.getElementById('profile-hero') as HTMLElement | null
-    const scrollIndicator = document.querySelector('.scroll-indicator-circle') as HTMLElement | null
-    const content = document.getElementById('content')
-
-    if (!profileHero || !scrollIndicator || !content) return
-
-    // Ensure button is always clickable initially
-    scrollIndicator.style.pointerEvents = 'auto'
-    scrollIndicator.style.opacity = '1'
-
-    // Handle scroll indicator click - always allow clicking
-    scrollIndicator.addEventListener('click', (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-      content.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      })
-    })
-
-    // Detect scroll position for fade effect
-    // Keep button always clickable, only adjust opacity for visual feedback
-    const handleScroll = () => {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-      const heroHeight = profileHero.offsetHeight
-
-      // Always keep button clickable, only adjust opacity for visual feedback
-      // Fade out when scrolled past hero section, but remain clickable
-      if (scrollTop > heroHeight * 0.7) {
-        scrollIndicator.style.opacity = '0.3'
-        profileHero.classList.add('scrolled')
-      } else {
-        scrollIndicator.style.opacity = '1'
-        profileHero.classList.remove('scrolled')
-      }
-
-      // Always ensure button is clickable
-      scrollIndicator.style.pointerEvents = 'auto'
-    }
-
-    // Initialize scroll state
-    handleScroll()
-
-    // Throttle scroll events
-    let ticking = false
-    window.addEventListener(
-      'scroll',
-      () => {
-        if (!ticking) {
-          window.requestAnimationFrame(() => {
-            handleScroll()
-            ticking = false
-          })
-          ticking = true
-        }
-      },
-      { passive: true }
-    )
-  })
-</script>

@@ -1,5 +1,5 @@
 ---
-import { Footer, ThemeProvider } from 'astro-pure/components/basic'
+import { Footer } from 'astro-pure/components/basic'
 import type { SiteMeta } from 'astro-pure/types'
 import BaseHead from '@/components/BaseHead.astro'
 import CustomHeader from '@/components/CustomHeader.astro'
@@ -18,7 +18,7 @@ interface Props {
 
 const {
   meta: { articleDate, description = config.description, ogImage, title },
-  highlightColor = '#7EC8E3',
+  highlightColor = '#4A8BC2',
   ...props
 } = Astro.props
 ---
@@ -26,7 +26,6 @@ const {
 <html lang={config.locale.lang} class='overflow-y-scroll'>
   <head>
     <BaseHead {articleDate} {description} {ogImage} {title} />
-    <ThemeProvider />
   </head>
 
   <body class='bg-background text-foreground' {...props}>
@@ -36,7 +35,10 @@ const {
       style={`background-image:linear-gradient(${highlightColor},transparent)`}
     >
     </div>
-    <!-- Background effects: water ripples / nebula overlay -->
+    <!-- Furina full-page background image -->
+    <div id='furina-bg'></div>
+    <div id='furina-overlay'></div>
+    <!-- Background effects: legacy overlay -->
     <div id='bg-effects' class='pointer-events-none fixed inset-0 z-0'></div>
     <div
       id='main-container'

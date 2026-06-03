@@ -514,8 +514,8 @@
 
 .search>.search-container>.search-space>.search-layout>.results-container .result-card.focus,
 .search-container>.search-space>.search-layout>.results-container .result-card.focus {
-  background: rgba(177, 156, 217, 0.15);
-  border-left: 3px solid #B19CD9;
+  background: rgba(74, 139, 194, 0.08);
+  border-left: 3px solid #4A8BC2;
   padding-left: calc(1em - 3px);
 }
 
@@ -605,7 +605,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: #B19CD9;
+  background-color: #4A8BC2;
   opacity: 1;
   /* More visible markers */
   cursor: pointer;
@@ -619,7 +619,7 @@
   width: 8px;
   height: 8px;
   opacity: 1;
-  box-shadow: 0 0 6px rgba(177, 156, 217, 0.8);
+  box-shadow: 0 0 6px rgba(74, 139, 194, 0.6);
 }
 
 .search>.search-container>.search-space>.search-layout>.markers-container .scrollbar-marker.active,
@@ -627,7 +627,7 @@
   width: 8px;
   height: 8px;
   opacity: 1;
-  box-shadow: 0 0 8px rgba(177, 156, 217, 0.8);
+  box-shadow: 0 0 8px rgba(74, 139, 194, 0.8);
 }
 
 /* Custom viewport indicator (replaces native scrollbar thumb) */
@@ -636,9 +636,9 @@
   position: absolute;
   left: 0;
   width: 100%;
-  background: rgba(177, 156, 217, 0.35);
+  background: rgba(74, 139, 194, 0.35);
   border-radius: 4px;
-  border: 1px solid rgba(177, 156, 217, 0.5);
+  border: 1px solid rgba(74, 139, 194, 0.5);
   pointer-events: auto;
   cursor: grab;
   z-index: 5;
@@ -648,16 +648,16 @@
 
 .search>.search-container>.search-space>.search-layout>.markers-container .viewport-indicator:hover,
 .search-container>.search-space>.search-layout>.markers-container .viewport-indicator:hover {
-  background: rgba(177, 156, 217, 0.45);
-  border-color: rgba(177, 156, 217, 0.6);
+  background: rgba(74, 139, 194, 0.45);
+  border-color: rgba(74, 139, 194, 0.6);
 }
 
 .search>.search-container>.search-space>.search-layout>.markers-container .viewport-indicator:active,
 .search-container>.search-space>.search-layout>.markers-container .viewport-indicator:active,
 .search>.search-container>.search-space>.search-layout>.markers-container .viewport-indicator.dragging,
 .search-container>.search-space>.search-layout>.markers-container .viewport-indicator.dragging {
-  background: rgba(177, 156, 217, 0.55);
-  border-color: rgba(177, 156, 217, 0.8);
+  background: rgba(74, 139, 194, 0.55);
+  border-color: rgba(74, 139, 194, 0.8);
   cursor: grabbing;
 }
 
@@ -686,9 +686,9 @@
   }
 
   50% {
-    background-color: rgba(255, 210, 50, 0.55);
-    box-shadow: 0 0 12px 4px rgba(255, 210, 50, 0.5), 0 0 24px 8px hsl(var(--primary) / 0.3);
-    outline: 2px solid rgba(255, 210, 50, 0.7);
+    background-color: rgba(212, 168, 75, 0.35);
+    box-shadow: 0 0 12px 4px rgba(74, 139, 194, 0.5), 0 0 24px 8px hsl(var(--primary) / 0.3);
+    outline: 2px solid rgba(212, 168, 75, 0.5);
   }
 }
 
