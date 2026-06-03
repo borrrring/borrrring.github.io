@@ -202,7 +202,7 @@ const {
           const rotSpeed = (Math.random() - 0.5) * 500
           const drift = (Math.random() - 0.5) * 30
 
-          function animate(time) {
+          function animate(time: number) {
             const dt = (time - startTime) / 1000
             x = vx * dt + drift * Math.sin(dt * 3)
             y = vy * dt + 0.5 * gravity * dt * dt
@@ -214,7 +214,7 @@ const {
             }
 
             el.style.transform = `translate(${x}px, ${y}px) rotate(${dt * rotSpeed}deg) scale(${1 + Math.sin(dt * 5) * 0.2})`
-            el.style.opacity = opacity
+            el.style.opacity = String(opacity)
             requestAnimationFrame(animate)
           }
 
