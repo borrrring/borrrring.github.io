@@ -65,10 +65,14 @@ if (!images[imagePath])
           <span class='block w-12 h-px bg-gradient-to-l from-transparent to-[#d4a84b]'></span>
         </div>
 
-        <!-- Tagline / description -->
-        <p class='text-lg sm:text-xl text-[#4A8BC2] font-semibold max-w-lg leading-relaxed drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)]'>
-          {config.description}
-        </p>
+        <!-- Tagline / description with gold bars -->
+        <div class='flex items-center gap-4 w-full justify-center'>
+          <span class='block w-14 sm:w-24 h-1 bg-[#d4a84b]/60 rounded-sm'></span>
+          <p class='text-lg sm:text-xl text-[#4A8BC2] font-semibold leading-relaxed drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)]'>
+            {config.description}
+          </p>
+          <span class='block w-14 sm:w-24 h-1 bg-[#d4a84b]/60 rounded-sm'></span>
+        </div>
 
         <!-- Navigation — gold accent buttons -->
         <nav class='mt-8 flex flex-wrap justify-center gap-2 sm:gap-3'>
